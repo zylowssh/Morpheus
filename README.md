@@ -1,9 +1,3 @@
-<style>
-    red{
-        color: red;
-    }
-</style>
-
 # ProjetNSI
 
  
@@ -14,30 +8,28 @@ Tout ça en python.
 
 METHODE D’ORGANISATION : Méthode Agile
 
-<red>ROUGE</red> = Prioritaire
-
 ### UGO (Frontend, design) : Concevoir l’interface mobile :
-- <red>Page d’accueil (lancer le suivi).</red>
-- <red>Écran de suivi en direct (affichage état, chrono, heure prévue réveil).</red>
+- Page d’accueil (lancer le suivi).
+- Écran de suivi en direct (affichage état, chrono, heure prévue réveil).
 - Écran de résumé du sommeil (graphique simple).
 - Design simple et intuitif (priorité à la lisibilité).
 - Intégrer l’alarme (affichage + sonnerie).
 
 ### MOHAMED (Backend, serveur) : Développer la partie serveur :
-- <red>API pour recevoir les données capteurs.</red>
-- <red>Traitement simple des données (détection sommeil/éveil).</red>
+- API pour recevoir les données capteurs.
+- Traitement simple des données (détection sommeil/éveil).
 - Stockage (BDD légère : SQLite, PostgreSQL ou MongoDB).
 - Assurer la communication front ↔ back (API REST/GraphQL).
 
 ### ADAM (Développeur principal) :
-- <red>Implémenter la récupération des capteurs (accéléromètre du téléphone).</red>
+- Implémenter la récupération des capteurs (accéléromètre du téléphone).
 - Préparer l’envoi des données en continu vers le back-end.
-- <red>Développer l’algorithme de détection sommeil/éveil (analyse de variance des mouvements sur des fenêtres de 30s).</red>
+- Développer l’algorithme de détection sommeil/éveil (analyse de variance des mouvements sur des fenêtres de 30s).
 - Collaborer avec Mohamed pour intégrer la logique côté serveur.
 
 ### AMOR ( développeur, manager) :
-- <red>Superviser l’avancée du projet, organiser les réunions et vérifier que chacun  avance.</red>
-- <red>Définir les priorités de développement (MVP d’abord, puis ajout des cycles).</red>
+- Superviser l’avancée du projet, organiser les réunions et vérifier que chacun  avance.
+- Définir les priorités de développement (MVP d’abord, puis ajout des cycles).
 - Développer avec Adam la partie calcul des cycles de sommeil et la logique du réveil intelligent.
 - Tester l’application avec le reste de l’équipe et rédiger la documentation utilisateur.
 
