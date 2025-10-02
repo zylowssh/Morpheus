@@ -1,4 +1,4 @@
-# ProjetNSI
+# Morpheus
 
  
 **Objectif final** : Nous voulons développer une application mobile qui utilise les capteurs du téléphone pour détecter si une personne dort et, grâce à une estimation des cycles de sommeil, déterminer le moment optimal pour la réveiller.
