@@ -34,8 +34,8 @@ METHODE D’ORGANISATION : Méthode Agile
 - Tester l’application avec le reste de l’équipe et rédiger la documentation utilisateur.
 
 
-
-SEMAINE 1 :
+## Programme :
+### SEMAINE 1 :
 - Adam → récup capteurs.
 - Mohamed → setup serveur et API.
 - Ugo → maquette interface.
