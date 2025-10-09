@@ -61,9 +61,7 @@ def unpack_packets_to_timeseries(packets: List[Dict[str, Any]]) -> pd.DataFrame:
 
 # ---------- Prétraitement ----------
 
-def preprocess_timeseries(df: pd.DataFrame,
-                          sensors: List[str] = ['accelerometer', 'gyroscope'],
-                          resample_hz: int = 50) -> pd.DataFrame:
+def preprocess_timeseries(df: pd.DataFrame,sensors: List[str] = ['accelerometer','gyroscope'], resample_hz: int = 50) -> pd.DataFrame:
     """
     Prétraitement général :
     - Filtrage de base (ex : passe-bas) pour réduire le bruit,
