@@ -86,6 +86,33 @@ Lancer l’application :
 python main.py
 ```
 
+### Setup pour l'équipe (Windows / PowerShell)
+
+Ne commitez pas le dossier de l'environnement virtuel local (`kivy_venv/`). Au lieu de cela, partagez `requirements.txt` (déjà présent) pour reproduire l'environnement.
+
+Commandes recommandées (PowerShell) :
+
+```powershell
+# Créer un venv local (nom au choix) et l'activer
+python -m venv .venv
+& '.\.venv\Scripts\python.exe' -m pip install --upgrade pip
+& '.\.venv\Scripts\python.exe' -m pip install -r requirements.txt
+
+# Lancer l'application depuis la racine du dépôt
+& '.\.venv\Scripts\python.exe' main.py
+```
+
+Sélection de l'interpréteur dans VS Code :
+
+1. Ouvrir la palette (Ctrl+Shift+P) → `Python: Select Interpreter`.
+2. Choisir l'interpréteur créé dans `.venv\Scripts\python.exe` (ou votre venv local).
+3. Redémarrer la fenêtre VS Code si nécessaire (Developer: Reload Window).
+
+Conseils :
+- Ajouter `kivy_venv/` dans `.gitignore` (déjà fait).
+- Ne commitez pas les chemins d'interpréteur locaux dans `.vscode/settings.json`.
+- Documentez dans le README toute dépendance système (par ex. SDL2 pour Kivy sous Windows) si nécessaire.
+
 ---
 
 ## 📱 Utilisation
