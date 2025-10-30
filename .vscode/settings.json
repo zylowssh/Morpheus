@@ -1,5 +1,0 @@
-{
-    // Project settings: avoid committing machine-specific interpreter paths.
-    // Teammates should select their interpreter locally (Ctrl+Shift+P → Python: Select Interpreter).
-    "python.analysis.indexing": true
-}
