@@ -1,0 +1,1 @@
+#TODO: Faire un widget qui va representer la carte d'une alarme, avec l'heure/minutes avec MDswitch pour activer ou desactiver l'alarme. 

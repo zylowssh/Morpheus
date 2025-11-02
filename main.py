@@ -31,7 +31,7 @@ class MainScreen(Screen):
         # Add layout to screen
         self.add_widget(layout)
     
-    def go_to_second_page(self, instance):
+    def go_to_second_page(self):
         # Switch to second screen with slide left animation
         self.manager.transition.direction = 'left'
         self.manager.current = 'second'
