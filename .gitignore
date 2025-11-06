@@ -1,0 +1,17 @@
+# Virtual environment
+kivy_venv/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# VS Code workspace storage (keep shared settings, but ignore local state)
+.vscode/*.code-workspace
+
+# Logs
+*.log
+
+# Mac/Windows specific
+.DS_Store
+Thumbs.db
