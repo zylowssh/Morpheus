@@ -25,7 +25,7 @@ class MainApp(MDApp):
                 
                 
                 MDFabButton(icon="plus",
-                    pos_hint={"center_x": 0.9, "center_y": 0.1},
+                    pos_hint={"center_x": 0.9, "center_y": 0.1}, 
             )
             
             )
