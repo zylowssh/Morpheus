@@ -2,7 +2,7 @@ from kivymd.uix.card import MDCard
 from kivymd.uix.relativelayout import MDRelativeLayout
 from kivymd.uix.label import MDLabel
 from kivymd.uix.selectioncontrol import MDSwitch
-
+from kivymd.app import MDApp
 
 
 class AlarmCard(MDCard):
@@ -46,3 +46,7 @@ class AlarmCard(MDCard):
         layout.add_widget(switch)
         self.add_widget(layout)
         
+class Test(MDApp):
+    def build(self):
+        return AlarmCard("07:00")
+Test().run()
