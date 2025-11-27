@@ -8,6 +8,7 @@ __pycache__/
 
 # VS Code workspace storage (keep shared settings, but ignore local state)
 .vscode/*.code-workspace
+*.code-workspace
 
 # Logs
 *.log
