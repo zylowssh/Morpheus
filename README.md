@@ -1,64 +1,56 @@
-Aerium — Capteur CO₂ & Qualité de l'air
+# **Aerium — Capteur CO₂ & Qualité de l'air**
 
+### *Surveillance intelligente de la qualité de l’air — Développée en Python & Kivy*
 
-Surveillance intelligente de la qualité de l’air — Développée en Python & Kivy
+Aerium est une application permettant de surveiller en temps réel la qualité de l’air grâce à un capteur de CO₂ physique. Elle affiche les valeurs instantanément, informe l’utilisateur lorsque l’air devient mauvais, et permet de définir des alertes personnalisées.
+Idéale pour surveiller une chambre, salle de classe, bureau ou atelier.
 
-Aerium est une application qui se connecte à un capteur de CO₂ physique pour afficher en temps réel la qualité de l’air, informer l’utilisateur lorsque le niveau devient mauvais, et permettre de configurer des alertes personnalisées.
-Idéale pour surveiller l’aération d’une chambre, d’une salle de classe, d’un bureau ou d’un atelier.
+---
 
-🚀 Fonctionnalités principales
+## 🚀 **Fonctionnalités principales**
 
-🌬️ Mesure en temps réel du CO₂ via un capteur externe (MH-Z19B, SCD30…)
+### 🌬️ Mesure en temps réel du CO₂
 
-📊 Indicateurs de qualité de l’air
+Compatible avec les capteurs : **MH-Z19B, SCD30, …**
 
-< 800 ppm : Bon
+### 📊 Indicateurs de qualité de l’air
 
-800–1200 ppm : Moyen
+| Niveau CO₂ (ppm) | Qualité         |
+| ---------------- | --------------- |
+| **< 800 ppm**    | Bon             |
+| **800–1200 ppm** | Moyen           |
+| **> 1200 ppm**   | Mauvais — Aérer |
 
-1200 ppm : Mauvais — Aérer
+### 🔔 Alertes personnalisées
 
-🔔 Alertes personnalisées
+* Seuil CO₂ modifiable
+* Notifications visuelles et/ou sonores
 
-Seuil CO₂ modifiable
+### 📱 Interface fluide (Kivy / KivyMD)
 
-Notifications visuelles ou sonores
+* Écran principal avec indicateur couleur
+* Écran réglages : seuil + fréquence de mise à jour
 
-📱 Interface fluide en Kivy/KivyMD
+### 📈 Graphique en direct *(optionnel)*
 
-Écran principal avec indicateur couleur
+### 💾 Historique local *(optionnel)*
 
-Écran réglages (seuil, fréquence de mise à jour)
+---
 
-📈 Graphique en direct (optionnel)
+## 🧠 **Technologies utilisées**
 
-💾 Historique local (optionnel)
+* **Langage :** Python 3.10+
+* **Framework UI :** Kivy / KivyMD
+* **Matériel :** capteurs CO₂ (MH-Z19B, SCD30…)
+* **Connexion :** UART / USB / I2C
+* **Communication :** `pyserial`
+* **Données :** SQLite *(optionnel)*
 
-🧠 Technologies utilisées
+---
 
-Langage : Python 3.10+
+## 🏗️ **Architecture du projet**
 
-Framework UI :
-
-Kivy
-
-KivyMD
-
-Matériel :
-
-Capteur CO₂ (ex : MH-Z19B / SCD30)
-
-Connexion via UART / USB / I2C
-
-Communication :
-
-Serial (pyserial)
-
-Données :
-
-SQLite (optionnel)
-
-🏗️ Architecture du projet
+```
 Aerium/
 │
 ├── main.py                  # Point d’entrée Kivy
@@ -77,20 +69,23 @@ Aerium/
 │   └── history.db
 │
 └── assets/                  # Icônes, sons d’alertes
+```
 
-⚙️ Fonctionnement global
+---
 
-Acquisition : lecture continue du capteur (ppm)
+## ⚙️ **Fonctionnement global**
 
-Analyse : classification des niveaux (bon/moyen/mauvais)
+1. **Acquisition :** lecture continue du capteur (ppm)
+2. **Analyse :** classification des niveaux (bon / moyen / mauvais)
+3. **Alertes :** déclenchement si le seuil configuré est dépassé
+4. **Interface :** mise à jour en temps réel dans Kivy
+5. **Historique :** enregistrement périodique *(optionnel)*
 
-Alertes : déclenchement si le seuil configuré est dépassé
+---
 
-Interface : mise à jour en temps réel dans Kivy
+## 🧩 **Installation**
 
-Historique : enregistrement périodique (optionnel)
-
-🧩 Installation
+```bash
 # Cloner le dépôt
 git clone https://github.com/<votre-utilisateur>/Aerium.git
 cd Aerium
@@ -101,51 +96,59 @@ source venv/bin/activate  # ou venv\Scripts\activate sous Windows
 
 # Installer les dépendances
 pip install -r requirements.txt
+```
 
-Exemple de requirements.txt
+### Exemple de `requirements.txt`
+
+```
 kivy>=2.2.0
 kivymd>=1.2.0
 pyserial>=3.5
+```
 
+### Lancer l’application :
 
-Lancer l’application :
-
+```bash
 python main.py
+```
 
-📱 Utilisation
+---
 
-Connectez le capteur CO₂ à votre ordinateur.
+## 📱 **Utilisation**
 
-Ouvrez Aerium.
+1. Connectez le capteur CO₂ à votre ordinateur.
+2. Ouvrez **Aerium**.
+3. Sélectionnez le port série (si l’app le propose).
+4. Sur l’écran d’accueil, surveillez :
 
-Choisissez le port série du capteur (si l'app l'intègre).
+   * valeur CO₂ (ppm)
+   * indicateur couleur
+5. Configurez vos seuils d’alerte dans l’onglet *Réglages*.
+6. Aérez si une alerte apparaît.
 
-Sur l’écran d’accueil, surveillez :
+---
 
-valeur en ppm
+## 🧮 **Logique de classification**
 
-couleur → qualité
+* **< 800 ppm** → Air sain
+* **800–1200 ppm** → Air modérément chargé
+* **> 1200 ppm** → Qualité mauvaise → ouvrir la fenêtre
 
-Configurez vos alertes dans l’onglet réglages.
+**Alerte :** déclenchée si la valeur dépasse le seuil utilisateur durant *X secondes*.
 
-Aérez si un message d’alerte apparaît.
+---
 
-🧮 Logique de classification
+## 🧠 **Feuille de route**
 
-< 800 ppm → Air sain
+| Phase    | Objectifs                                        |
+| -------- | ------------------------------------------------ |
+| **MVP**  | Lecture capteur + UI simple + indicateur couleur |
+| **v1.0** | Réglages des seuils + alertes sonores/visuelles  |
+| **v1.1** | Graphique live + historique local                |
+| **v2.0** | Optimisation, multiplateforme, nouveau design    |
 
-800–1200 ppm → Air modérément chargé
+---
 
-1200 ppm → Qualité mauvaise → ouvrir la fenêtre
+## 📄 Licence
 
-Déclenchement d’alerte si valeur > seuil utilisateur durant X secondes
-
-🧠 Feuille de route
-Phase	Objectifs
-MVP	Lecture capteur + UI simple + indicateur couleur
-v1.0	Réglages des seuils + alertes sonores/visuelles
-v1.1	Graphique live + historique local
-v2.0	Optimisation, support multiplateforme, meilleur design
-📄 Licence
-
-Projet sous licence MIT — voir le fichier LICENSE.
+Projet sous **Licence MIT** — voir le fichier `LICENSE`.
