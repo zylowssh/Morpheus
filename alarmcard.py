@@ -10,7 +10,7 @@ class AlarmCard(MDCard):
 
         self.padding = "4dp"
         self.size_hint = (1, None)
-        self.height = "100dp"
+        self.height = "102dp"
         self.radius = [15]
 
         layout = MDRelativeLayout()
@@ -27,17 +27,28 @@ class AlarmCard(MDCard):
         label_alarm = MDLabel(
             text=label_text,
             adaptive_size=True,
-            pos_hint={"center_y": 0.3, "x": 0.1},
+            pos_hint={"center_y": 0.4, "x": 0.1},
             halign="left",
         )
 
         # Switch
         switch = MDSwitch(
-            pos_hint={"center_y": 0.5, "right": 1},
+            pos_hint={"center_y": 0.5, "right": 0.95},
             x=-20,
+        )
+
+        # Heure
+        label_day = MDLabel(
+            text="L M M J V S D",
+            adaptive_size=True,
+            pos_hint={"center_y": 0.09, "x": 0.1},
+            halign="left",
+            text_color=(0.5, 0.5, 0.5, 1)
+            
         )
 
         layout.add_widget(label_time)
         layout.add_widget(label_alarm)
         layout.add_widget(switch)
+        layout.add_widget(label_day)
         self.add_widget(layout)

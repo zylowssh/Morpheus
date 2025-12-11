@@ -28,14 +28,14 @@ class MainApp(MDApp):
         #Layout principal vertical
         main_layout = MDBoxLayout(
             orientation="vertical",
-            padding=("20dp", "160dp", "20dp", "20dp"),
+            padding=("20dp", "160dp", "20dp", "22p"),
             spacing="20dp",
         )
 
 
         #Label de base
         self.label = MDLabel(
-            text="Set an alarm !",
+            text="Ajoutez une alarme !",
             halign="center",
             font_style="Headline",
         )
@@ -71,7 +71,7 @@ class MainApp(MDApp):
         if self.label.parent:
             self.label.parent.remove_widget(self.label)
             
-        card = AlarmCard("07:00", "New alarm")
+        card = AlarmCard("07:00", "Nouvelle alarme")
         self.alarms_layout.add_widget(card)
 
 
