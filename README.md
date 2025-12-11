@@ -1,66 +1,99 @@
-# Morpheus
-
-![Python](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python)
-![Kivy](https://img.shields.io/badge/Kivy-Framework-green)
-![KivyMD](https://img.shields.io/badge/KivyMD-UI%20Toolkit-purple)
-![Plyer](https://img.shields.io/badge/Plyer-Sensor%20API-orange)
-![License](https://img.shields.io/badge/Licence-MIT-lightgrey)
-![Status](https://img.shields.io/badge/Statut-En%20développement-yellow)
-
-**Réveil intelligent — Développé avec Python, Kivy, KivyMD et Plyer**
-
-Morpheus est une **application mobile** qui utilise les capteurs du smartphone pour détecter les phases de sommeil d’une personne et, grâce à une estimation de ses cycles, détermine le moment optimal pour la réveiller. L’objectif : offrir un **réveil intelligent** qui améliore la sensation de repos et réduit la fatigue au réveil.
+Aerium — Capteur CO₂ & Qualité de l'air
 
 
-## 🚀 Fonctionnalités principales
+Surveillance intelligente de la qualité de l’air — Développée en Python & Kivy
 
-* ⏰ **Réveil intelligent** : déclenchement du réveil pendant une phase de sommeil léger dans une fenêtre définie.
-* 💤 **Détection du sommeil** : détection automatique de l’endormissement et des réveils nocturnes.
-* 📊 **Analyse des cycles** : estimation des cycles de ~90 min via les mouvements et sons ambiants.
-* 📱 **Tableau de bord** : affichage des statistiques de sommeil (durée, qualité, interruptions).
-* ⚙️ **Personnalisation** : réglages de sensibilité, sons d’alarme, thèmes et intégration avec montres connectées (BLE).
-<!-- * 🔒 **Respect de la vie privée** : traitement local des données avec consentement explicite et possibilité de suppression complète. -->
+Aerium est une application qui se connecte à un capteur de CO₂ physique pour afficher en temps réel la qualité de l’air, informer l’utilisateur lorsque le niveau devient mauvais, et permettre de configurer des alertes personnalisées.
+Idéale pour surveiller l’aération d’une chambre, d’une salle de classe, d’un bureau ou d’un atelier.
 
+🚀 Fonctionnalités principales
 
-## 🧠 Technologies utilisées
+🌬️ Mesure en temps réel du CO₂ via un capteur externe (MH-Z19B, SCD30…)
 
-* **Langage :** Python 3.10+
-* **Frameworks :** [Kivy](https://kivy.org/) & [KivyMD](https://kivymd.readthedocs.io/) pour l’interface.
-* **Capteurs & API :** [Plyer](https://plyer.readthedocs.io/) pour l’accès multiplateforme aux capteurs.
-<!-- * **Traitement des données :** NumPy, SciPy (optionnel) pour le filtrage et l’extraction de caractéristiques. 
+📊 Indicateurs de qualité de l’air
 
----
+< 800 ppm : Bon
 
-## 🏗️ Architecture du projet
+800–1200 ppm : Moyen
 
-```text
-Morpheus/
+1200 ppm : Mauvais — Aérer
+
+🔔 Alertes personnalisées
+
+Seuil CO₂ modifiable
+
+Notifications visuelles ou sonores
+
+📱 Interface fluide en Kivy/KivyMD
+
+Écran principal avec indicateur couleur
+
+Écran réglages (seuil, fréquence de mise à jour)
+
+📈 Graphique en direct (optionnel)
+
+💾 Historique local (optionnel)
+
+🧠 Technologies utilisées
+
+Langage : Python 3.10+
+
+Framework UI :
+
+Kivy
+
+KivyMD
+
+Matériel :
+
+Capteur CO₂ (ex : MH-Z19B / SCD30)
+
+Connexion via UART / USB / I2C
+
+Communication :
+
+Serial (pyserial)
+
+Données :
+
+SQLite (optionnel)
+
+🏗️ Architecture du projet
+Aerium/
 │
-├── main.py              # Point d’entrée de l’application Kivy
-├── ui/                  # Interfaces et layouts (.kv)
-├── sensors/             # Gestion des capteurs (accéléromètre, gyroscope, micro…)
-├── analysis/            # Algorithmes de détection et d’estimation des cycles
-├── data/                # Stockage local chiffré
-└── assets/              # Icônes, sons et alarmes
-```
+├── main.py                  # Point d’entrée Kivy
+├── ui/                      # Interfaces .kv + widgets
+│   ├── home.kv
+│   └── settings.kv
+│
+├── sensors/                 # Connexion & lecture du capteur CO₂
+│   └── co2_reader.py
+│
+├── core/                    # Logique interne
+│   ├── analyzer.py          # Qualité de l'air, niveaux, alertes
+│   └── config.py            # Gestion des réglages
+│
+├── data/                    # Historique local (optionnel)
+│   └── history.db
+│
+└── assets/                  # Icônes, sons d’alertes
 
-### Fonctionnement global
+⚙️ Fonctionnement global
 
-1. **Acquisition :** collecte des données via Plyer (mouvements, sons, luminosité).
-2. **Prétraitement :** filtrage et extraction de caractéristiques (variance, micro-mouvements, énergie sonore).
-3. **Détection :** modèle heuristique ou ML léger pour classer les états de sommeil.
-4. **Estimation des cycles :** détection des motifs récurrents pour estimer les cycles (~90 min).
-5. **Réveil intelligent :** déclenchement du réveil au moment optimal dans la fenêtre définie.
-6. **Interface utilisateur :** affichage des résultats, tendances et qualité du sommeil.
+Acquisition : lecture continue du capteur (ppm)
 
----
+Analyse : classification des niveaux (bon/moyen/mauvais)
 
-## 🧩 Installation
+Alertes : déclenchement si le seuil configuré est dépassé
 
-```bash
+Interface : mise à jour en temps réel dans Kivy
+
+Historique : enregistrement périodique (optionnel)
+
+🧩 Installation
 # Cloner le dépôt
-git clone https://github.com/<votre-utilisateur>/Morpheus.git
-cd Morpheus
+git clone https://github.com/<votre-utilisateur>/Aerium.git
+cd Aerium
 
 # Créer un environnement virtuel
 python -m venv venv
@@ -68,80 +101,51 @@ source venv/bin/activate  # ou venv\Scripts\activate sous Windows
 
 # Installer les dépendances
 pip install -r requirements.txt
-```
 
-### Exemple de `requirements.txt`
-
-```text
+Exemple de requirements.txt
 kivy>=2.2.0
 kivymd>=1.2.0
-plyer>=2.1.0
-numpy
-scipy
-```
+pyserial>=3.5
+
 
 Lancer l’application :
 
-```bash
 python main.py
-```
 
----
+📱 Utilisation
 
-## 📱 Utilisation
+Connectez le capteur CO₂ à votre ordinateur.
 
-1. Lancez **Morpheus**.
-2. Définissez votre **heure de réveil cible** et la **fenêtre de réveil** (ex. 30 minutes).
-3. Placez votre téléphone à proximité du lit (surface plane, micro dégagé).
-4. Appuyez sur **Démarrer le suivi du sommeil**.
-5. Morpheus analysera les mouvements et sons pour estimer les phases et vous réveiller au moment optimal.
+Ouvrez Aerium.
 
----
+Choisissez le port série du capteur (si l'app l'intègre).
 
-## 🧮 Algorithme (concept général)
+Sur l’écran d’accueil, surveillez :
 
-* **Fenêtrage temporel :** analyse des données par tranches de 30–60 secondes.
-* **Extraction de caractéristiques :** variance des mouvements, énergie sonore, rythme respiratoire estimé.
-* **Classification :** combinaison de règles simples et d’un petit modèle ML.
-* **Suivi des cycles :** adaptation progressive selon les habitudes de l’utilisateur.
-* **Déclenchement :** réveil activé si la probabilité de sommeil léger dépasse un seuil pendant la fenêtre.
+valeur en ppm
 
----
+couleur → qualité
 
-## 🧠 Feuille de route
+Configurez vos alertes dans l’onglet réglages.
 
-| Phase                     | Objectifs                                                                                |
-| ------------------------- | ---------------------------------------------------------------------------------------- |
-| **MVP (0–3 mois)**        | Capture des capteurs (Android), heuristiques simples, UI basique et réveil fonctionnel.  |
-| **v1 (3–6 mois)**         | Intégration d’un modèle ML, calibration utilisateur, support iOS, statistiques avancées. |
-| **v2 (6–12 mois)**        | Intégration montres connectées / BLE, optimisation énergétique, meilleure UX.            |
-| **Production (12+ mois)** | Publication, synchronisation cloud optionnelle, retours utilisateurs.                    |
--->
-<!--
----
+Aérez si un message d’alerte apparaît.
 
-## 🔐 Vie privée & éthique
+🧮 Logique de classification
 
-* Données traitées **localement** par défaut.
-* Consentement explicite pour chaque capteur utilisé.
-* Option pour **supprimer ou exporter les données** à tout moment.
-* **Transparence totale** sur les données collectées et leur usage.
-* **Avertissement :** Morpheus **n’est pas un dispositif médical** et ne doit pas être utilisé à des fins de diagnostic.
+< 800 ppm → Air sain
 
----
+800–1200 ppm → Air modérément chargé
 
-## 🧑‍💻 Contributeurs
+1200 ppm → Qualité mauvaise → ouvrir la fenêtre
 
-* **Chef de projet :** [Votre nom]
-* **Équipe :** Équipe Morpheus
+Déclenchement d’alerte si valeur > seuil utilisateur durant X secondes
 
----
+🧠 Feuille de route
+Phase	Objectifs
+MVP	Lecture capteur + UI simple + indicateur couleur
+v1.0	Réglages des seuils + alertes sonores/visuelles
+v1.1	Graphique live + historique local
+v2.0	Optimisation, support multiplateforme, meilleur design
+📄 Licence
 
-## 📄 Licence
-
-Projet sous licence **MIT** — voir le fichier [LICENSE](LICENSE) pour plus d’informations.
-
----
-
-*Créé avec ❤️ par l’équipe Morpheus — 2025*
--->
+Projet sous licence MIT — voir le fichier LICENSE.
