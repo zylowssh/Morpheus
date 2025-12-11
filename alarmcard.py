@@ -2,7 +2,6 @@ from kivymd.uix.card import MDCard
 from kivymd.uix.relativelayout import MDRelativeLayout
 from kivymd.uix.label import MDLabel
 from kivymd.uix.selectioncontrol import MDSwitch
-from kivymd.app import MDApp
 
 
 class AlarmCard(MDCard):
@@ -10,29 +9,26 @@ class AlarmCard(MDCard):
         super().__init__(**kwargs)
 
         self.padding = "4dp"
-        self.size_hint = (None, None)
-        self.size = ("240dp", "100dp")
+        self.size_hint = (1, None)
+        self.height = "100dp"
         self.radius = [15]
+
         layout = MDRelativeLayout()
 
         # Heure
         label_time = MDLabel(
-            text=time_text.capitalize(),
+            text=time_text,
             adaptive_size=True,
             pos_hint={"center_y": 0.7, "x": 0.1},
             halign="left",
-            theme_text_color="Custom",
-            text_color=(0, 0, 0, 1),
         )
 
         # Label
         label_alarm = MDLabel(
-            text=label_text.capitalize(),
+            text=label_text,
             adaptive_size=True,
-            pos_hint={"center_y": 0.3, "center_x": 0.3},
+            pos_hint={"center_y": 0.3, "x": 0.1},
             halign="left",
-            theme_text_color="Custom",
-            text_color=(0, 0, 0, 1),
         )
 
         # Switch
@@ -45,8 +41,3 @@ class AlarmCard(MDCard):
         layout.add_widget(label_alarm)
         layout.add_widget(switch)
         self.add_widget(layout)
-        
-class Test(MDApp):
-    def build(self):
-        return AlarmCard("07:00")
-Test().run()
