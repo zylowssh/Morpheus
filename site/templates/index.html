@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Aerium Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      background: #0e0e11;
+      color: #eaeaea;
+      font-family: sans-serif;
+      padding: 30px;
+    }
+    .value {
+      font-size: 3rem;
+      margin-bottom: 10px;
+    }
+    .status {
+      font-size: 1.2rem;
+      margin-bottom: 30px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Aerium – CO₂ Monitor</h1>
+<div class="value" id="co2">---</div>
+<div class="status" id="status">---</div>
+
+<canvas id="chart" height="100"></canvas>
+
+<script>
+let chart
+
+function statusText(co2) {
+  if (co2 < 800) return "Good 🟢"
+  if (co2 < 1400) return "Warning 🟠"
+  return "Critical 🔴"
+}
+
+async function update() {
+  const latest = await fetch("/api/latest").then(r => r.json())
+  const history = await fetch("/api/history").then(r => r.json())
+
+  document.getElementById("co2").textContent = latest.co2 + " ppm"
+  document.getElementById("status").textContent = statusText(latest.co2)
+
+  const labels = history.map(x => x.timestamp).reverse()
+  const values = history.map(x => x.co2).reverse()
+
+  if (!chart) {
+    chart = new Chart(document.getElementById("chart"), {
+      type: "line",
+      data: {
+        labels,
+        datasets: [{ label: "CO₂ (ppm)", data: values }]
+      }
+    })
+  } else {
+    chart.data.labels = labels
+    chart.data.datasets[0].data = values
+    chart.update()
+  }
+}
+
+update()
+setInterval(update, 3000)
+</script>
+
+</body>
+</html>
