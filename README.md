@@ -114,13 +114,31 @@ python main.py
 
 ---
 
+## 🌐 **Version Web — WebApp Flask**
+
+Aerium peut également être déployé en tant que **WebApp** pour visualiser la qualité de l’air depuis un navigateur. La version Flask permet de consulter les mesures en temps réel et d’afficher les graphiques interactifs.
+
+### ⚙️ **Installation & Lancement**
+
+1. Lancer l’application Flask :
+
+```bash
+python site/app.py
+```
+
+4. Ouvrir votre navigateur à l’adresse :
+
+```
+http://127.0.0.1:5000
+```
+---
+
 ## 📱 **Utilisation**
 
 1. Connectez le capteur CO₂ à votre ordinateur.
 2. Ouvrez **Aerium**.
 3. Sélectionnez le port série (si l’app le propose).
 4. Sur l’écran d’accueil, surveillez :
-
    * valeur CO₂ (ppm)
    * indicateur couleur
 5. Configurez vos seuils d’alerte dans l’onglet *Réglages*.
