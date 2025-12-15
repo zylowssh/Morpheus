@@ -22,7 +22,8 @@ def api_latest():
 
 @app.route("/api/history")
 def api_history():
-    return jsonify(history[-50:])  # last 50 values
+    return jsonify(history[-50:])  # last 50 readings
+
 
 if __name__ == "__main__":
     app.run(debug=True)

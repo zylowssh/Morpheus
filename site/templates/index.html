@@ -1,71 +1,44 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Aerium</title>
+  <title>Aerium – Air Quality Monitor</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    body {
-      background: #0e0e11;
-      color: #eaeaea;
-      font-family: sans-serif;
-      padding: 30px;
-    }
-    .value {
-      font-size: 3rem;
-    }
-    .good { color: #4ade80; }
-    .medium { color: #facc15; }
-    .bad { color: #f87171; }
-  </style>
 </head>
 <body>
 
-  <h1>Aerium – CO₂ Monitor</h1>
-  <div id="value" class="value">---</div>
-  <div id="quality">---</div>
+<header class="topbar">
+  <h1>Aerium</h1>
+  <span class="subtitle">CO₂ Air Quality Dashboard</span>
+</header>
 
-  <canvas id="chart" height="120"></canvas>
+<main class="container">
 
-  <script>
-  let chart;
+  <section class="card">
+    <h2>Live CO₂ level</h2>
+    <div id="value" class="value">---</div>
+    <div id="quality" class="quality">---</div>
+  </section>
 
-  async function update() {
-    const latest = await fetch("/api/latest").then(r => r.json());
-    const history = await fetch("/api/history").then(r => r.json());
+  <section class="card">
+    <h2>History (last 50 points)</h2>
+    <canvas id="chart"></canvas>
+  </section>
 
-    const value = document.getElementById("value");
-    const quality = document.getElementById("quality");
+  <section class="card">
+    <h2>Settings</h2>
+    <p>Future page for threshold and alert settings</p>
+  </section>
 
-    value.textContent = latest.ppm + " ppm";
-    quality.textContent = latest.quality;
+</main>
 
-    value.className = "value " + (
-      latest.quality === "Bon" ? "good" :
-      latest.quality === "Moyen" ? "medium" : "bad"
-    );
+<footer class="footer">
+  Aerium © 2025
+</footer>
 
-    const labels = history.map((_, i) => i);
-    const data = history.map(x => x.ppm);
-
-    if (!chart) {
-      chart = new Chart(document.getElementById("chart"), {
-        type: "line",
-        data: {
-          labels,
-          datasets: [{ label: "CO₂ (ppm)", data }]
-        }
-      });
-    } else {
-      chart.data.labels = labels;
-      chart.data.datasets[0].data = data;
-      chart.update();
-    }
-  }
-
-  update();
-  setInterval(update, 2000);
-  </script>
-
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
 </html>
