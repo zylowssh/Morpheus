@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Aerium – Air Quality Monitor</title>
+  <title>Aerium – Dashboard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
@@ -10,34 +10,34 @@
 </head>
 <body>
 
+<!--
 <header class="topbar">
   <h1>Aerium</h1>
   <span class="subtitle">CO₂ Air Quality Dashboard</span>
 </header>
+-->
 
 <main class="container">
 
   <section class="card">
-    <h2>Live CO₂ level</h2>
+    <h2>Niveau de CO2</h2>
     <div id="value" class="value">---</div>
     <div id="quality" class="quality">---</div>
+    <a href="/settings" class="link">Paramètres</a>
   </section>
 
   <section class="card">
-    <h2>History (last 50 points)</h2>
+    <h2>Historique</h2>
     <canvas id="chart"></canvas>
-  </section>
-
-  <section class="card">
-    <h2>Settings</h2>
-    <p>Future page for threshold and alert settings</p>
   </section>
 
 </main>
 
+<!--
 <footer class="footer">
   Aerium © 2025
 </footer>
+-->
 
 <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>

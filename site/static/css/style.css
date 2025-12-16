@@ -8,7 +8,9 @@
   --bad: #f87171;
 }
 
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+}
 
 body {
   margin: 0;
@@ -45,10 +47,10 @@ body {
 
 .value {
   font-size: 3rem;
-  margin: 10px 0;
 }
 
 .quality {
+  margin-top: 10px;
   padding: 6px 14px;
   border-radius: 999px;
   font-weight: 600;
@@ -74,5 +76,71 @@ body {
   text-align: center;
   padding: 20px;
   font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.link {
+  display: inline-block;
+  margin-top: 10px;
+  color: var(--muted);
+  text-decoration: none;
+}
+
+/* ===================== */
+/* REAL TOGGLE SWITCH */
+/* ===================== */
+
+.switch-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.switch-label {
+  font-weight: 500;
+}
+
+.toggle {
+  position: relative;
+  width: 56px;
+  height: 30px;
+}
+
+.toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.track {
+  position: absolute;
+  inset: 0;
+  background: #374151;
+  border-radius: 999px;
+  transition: background 0.3s ease;
+}
+
+.thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 24px;
+  height: 24px;
+  background: #e5e7eb;
+  border-radius: 50%;
+  transition: transform 0.3s ease;
+}
+
+.toggle input:checked + .track {
+  background: var(--good);
+}
+
+.toggle input:checked + .track .thumb {
+  transform: translateX(26px);
+}
+
+.status-text {
+  margin-top: 10px;
   color: var(--muted);
 }

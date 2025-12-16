@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Aerium – Paramètres</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<!--
+<header class="topbar">
+  <h1>Aerium</h1>
+  <span class="subtitle">Paramètres</span>
+</header>
+-->
+
+<main class="container">
+
+ <section class="card">
+  <h2>Analyse</h2>
+
+  <div class="switch-row">
+    <span class="switch-label">Analyse en direct</span>
+
+    <label class="toggle">
+      <input type="checkbox" id="toggle-analysis">
+      <span class="track">
+        <span class="thumb"></span>
+      </span>
+    </label>
+  </div>
+
+  <p id="status-text" class="status-text"></p>
+</section>
+
+
+  <a href="/" class="link">← Retour au tableau de bord</a>
+
+</main>
+
+<script src="{{ url_for('static', filename='js/settings.js') }}"></script>
+</body>
+</html>
