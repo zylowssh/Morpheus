@@ -4,18 +4,14 @@
   <meta charset="UTF-8">
   <title>Aerium – Tableau de bord</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
 
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3"></script>
+
 </head>
 <body>
-
-<!--
-<header class="topbar">
-  <h1>Aerium</h1>
-  <span class="subtitle">CO₂ Air Quality Dashboard</span>
-</header>
--->
 
 <main class="container">
 
@@ -23,21 +19,31 @@
     <h2>Niveau de CO2</h2>
     <div id="value" class="value">---</div>
     <div id="quality" class="quality">---</div>
-    <a href="/settings" class="link">Paramètres</a>
+    
+    <div style="margin-top: 20px;">
+      <button id="export" class="link, btn-export" style="display: inline-block; margin-right: 15px;">
+        📥 Exporter CSV
+      </button>
+      <a href="/settings" class="link">⚙️ Paramètres</a>
+    </div>
+    
+    <div id="error-message" style="display: none; margin-top: 15px; padding: 10px; background: rgba(248,113,113,0.15); border-radius: 6px; color: #f87171; font-size: 0.9rem;"></div>
   </section>
 
   <section class="card">
-    <h2>Historique</h2>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+      <h2 style="margin: 0;">Historique</h2>
+      <div>
+        <button id="reset-btn" style="padding: 4px 10px; margin-left: 5px; background: rgba(255,255,255,0.1); border: none; border-radius: 4px; color: #9ca3af; cursor: pointer;">⟲</button>
+      </div>
+    </div>
     <canvas id="chart"></canvas>
+    <div style="display: flex; justify-content: space-between; margin-top: 10px; font-size: 0.85rem; color: #9ca3af;">
+      <span id="time-range">Simulation en direct</span>
+    </div>
   </section>
 
 </main>
-
-<!--
-<footer class="footer">
-  Aerium © 2025
-</footer>
--->
 
 <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>

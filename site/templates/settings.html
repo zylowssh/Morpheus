@@ -4,39 +4,100 @@
   <meta charset="UTF-8">
   <title>Aerium – Paramètres</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
 </head>
 <body>
 
-<!--
-<header class="topbar">
-  <h1>Aerium</h1>
-  <span class="subtitle">Paramètres</span>
-</header>
--->
-
 <main class="container">
 
- <section class="card">
-  <h2>Analyse</h2>
+  <section class="card">
+    <h2>Analyse</h2>
 
-  <div class="switch-row">
-    <span class="switch-label">Analyse en direct</span>
+    <div class="switch-row">
+      <span class="switch-label">Analyse en direct</span>
+      <label class="toggle">
+        <input type="checkbox" id="toggle-analysis" checked>
+        <span class="track">
+          <span class="thumb"></span>
+        </span>
+      </label>
+    </div>
 
-    <label class="toggle">
-      <input type="checkbox" id="toggle-analysis">
-      <span class="track">
-        <span class="thumb"></span>
-      </span>
-    </label>
+    <p id="status-text" class="status-text"></p>
+  </section>
+
+  <section class="card">
+    <h2>Seuils d'alerte</h2>
+    
+    <div class="slider-group">
+      <div class="slider-item">
+        <label for="good-threshold" class="slider-label">Seuil Bon → Moyen</label>
+        <input type="range" id="good-threshold" min="400" max="1500" value="800" step="50">
+        <div class="slider-values">
+          <span>400</span>
+          <span id="good-value" class="slider-current">800 ppm</span>
+          <span>1500</span>
+        </div>
+      </div>
+      
+      <div class="slider-item">
+        <label for="bad-threshold" class="slider-label">Seuil Moyen → Mauvais</label>
+        <input type="range" id="bad-threshold" min="800" max="2500" value="1200" step="50">
+        <div class="slider-values">
+          <span>800</span>
+          <span id="bad-value" class="slider-current">1200 ppm</span>
+          <span>2500</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="threshold-visual">
+      <div class="threshold-bar">
+        <div id="good-segment" class="threshold-segment good-seg">Bon</div>
+        <div id="medium-segment" class="threshold-segment medium-seg">Moyen</div>
+        <div id="bad-segment" class="threshold-segment bad-seg">Mauvais</div>
+      </div>
+      <div class="threshold-labels">
+        <span>400</span>
+        <span id="good-label">800</span>
+        <span id="bad-label">1200</span>
+        <span>2000+</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Simulation</h2>
+    
+    <div class="switch-row">
+      <span class="switch-label">Mode réaliste</span>
+      <label class="toggle">
+        <input type="checkbox" id="realistic-mode" checked>
+        <span class="track">
+          <span class="thumb"></span>
+        </span>
+      </label>
+    </div>
+    
+    <p class="hint">Simule des variations naturelles du CO₂</p>
+    
+    <div class="slider-item">
+      <label for="update-speed" class="slider-label">Vitesse de mise à jour</label>
+      <input type="range" id="update-speed" min="1" max="10" value="2" step="0.5">
+      <div class="slider-values">
+        <span>1s</span>
+        <span id="speed-value" class="slider-current">2 secondes</span>
+        <span>10s</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="action-buttons">
+    <button id="save-settings" class="btn-save">💾 Enregistrer</button>
+    <button id="reset-settings" class="btn-reset">⟲ Réinitialiser</button>
+    <a href="/" class="link">← Retour au tableau de bord</a>
   </div>
-
-  <p id="status-text" class="status-text"></p>
-</section>
-
-
-  <a href="/" class="link">← Retour au tableau de bord</a>
 
 </main>
 
