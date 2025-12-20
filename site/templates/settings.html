@@ -1,15 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Aerium – Paramètres</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-  <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
-</head>
-<body>
-
-<main class="container">
+{% extends "base.html" %}
+{% block content %}
 
   <section class="card">
     <h2>Analyse</h2>
@@ -96,11 +86,7 @@
   <div class="action-buttons">
     <button id="save-settings" class="btn-save">💾 Enregistrer</button>
     <button id="reset-settings" class="btn-reset">⟲ Réinitialiser</button>
-    <a href="/" class="link">← Retour au tableau de bord</a>
+    <a href="/live" class="link">← Retour au tableau de bord</a>
   </div>
 
-</main>
-
-<script src="{{ url_for('static', filename='js/settings.js') }}"></script>
-</body>
-</html>
+{% endblock %}

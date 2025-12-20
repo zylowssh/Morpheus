@@ -64,6 +64,10 @@ def get_air_quality(ppm):
 def index():
     return render_template("index.html")  # Dashboard page
 
+@app.route("/live")
+def live_page():
+    return render_template("live.html")  # Settings page
+
 # 2. SETTINGS ROUTE
 @app.route("/settings")
 def settings_page():
