@@ -1,3 +1,6 @@
+/* ======================================================
+   DESIGN TOKENS
+====================================================== */
 :root {
   --bg: #0b0d12;
   --card: #141826;
@@ -8,14 +11,15 @@
   --bad: #f87171;
 }
 
-/* RESET */
+/* ======================================================
+   RESET & BASE
+====================================================== */
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-/* BODY */
 body {
   background: var(--bg);
   color: var(--text);
@@ -23,7 +27,18 @@ body {
   min-height: 100vh;
 }
 
-/* NAVBAR */
+/* ======================================================
+   LAYOUT
+====================================================== */
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* ======================================================
+   NAVBAR
+====================================================== */
 .navbar {
   position: sticky;
   top: 0;
@@ -33,7 +48,7 @@ body {
   padding: 14px 20px;
   background: rgba(11, 13, 18, 0.85);
   backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(255,255,255,0.06);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .navbar a {
@@ -47,7 +62,7 @@ body {
 
 .navbar a:hover {
   color: var(--text);
-  background: rgba(255,255,255,0.05);
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .navbar a.active {
@@ -55,46 +70,40 @@ body {
   color: var(--good);
 }
 
-/* LAYOUT */
-.container {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 20px;
-}
-
-/* CARDS */
+/* ======================================================
+   CARDS & HEADINGS
+====================================================== */
 .card {
   background: var(--card);
   padding: 25px;
   border-radius: 14px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   margin-bottom: 20px;
-  border: 1px solid rgba(255,255,255,0.05);
+  overflow: visible;
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-/* HEADINGS */
 h2 {
   font-size: 1.5rem;
   margin-bottom: 15px;
 }
 
-/* VALUE + QUALITY */
+/* ======================================================
+   VALUE DISPLAY (LIVE PAGE)
+====================================================== */
 .value-wrapper {
   display: flex;
-  align-items: center;
-  gap: 10px;
+  align-items: center; /* 🔥 */
+  gap: 7px;
 }
+
 .value {
   font-size: 3rem;
   font-weight: 700;
   margin: 10px 0;
-  transition: color 0.25s ease;
-}
-
-.trend {
-  font-size: 1.6rem;
-  opacity: 0.8;
-  transition: transform 0.2s ease, opacity 0.2s ease;
+  transition: color 0.25s ease, transform 0.25s ease;
+  display: flex;
+  align-items: center;
 }
 
 .value.bump {
@@ -102,7 +111,37 @@ h2 {
 }
 
 .value.glow {
-  text-shadow: 0 0 18px rgba(248,113,113,0.8);
+  text-shadow: 0 0 18px rgba(248, 113, 113, 0.8);
+}
+
+#trend {
+  width: 3em;
+  height: 3em;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-top: 15px; /* optical alignment with numbers */
+
+  transform-box: fill-box;
+  transform-origin: center;
+
+  transition:
+    transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    color 0.3s ease;
+}
+
+#trend path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+#trend.bump path {
+  transform: scale(1.15);
 }
 
 .quality {
@@ -114,7 +153,9 @@ h2 {
   transition: all 0.3s ease;
 }
 
-/* LINKS */
+/* ======================================================
+   LINKS
+====================================================== */
 .link {
   display: inline-block;
   color: var(--muted);
@@ -124,11 +165,13 @@ h2 {
 }
 
 .link:hover {
-  background: rgba(255,255,255,0.05);
+  background: rgba(255, 255, 255, 0.05);
   color: var(--text);
 }
 
-/* SWITCH */
+/* ======================================================
+   TOGGLES / SWITCHES
+====================================================== */
 .switch-row {
   display: flex;
   justify-content: space-between;
@@ -172,31 +215,9 @@ h2 {
   transform: translateX(26px);
 }
 
-.threshold-bar {
-  height: 30px;
-  border-radius: 6px;
-  overflow: hidden;
-  display: flex;
-  margin-bottom: 10px;
-}
-
-.threshold-segment {
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 600;
-  font-size: 0.85rem;
-  color: var(--bg);
-  min-width: 60px;
-}
-
-.good-seg { background: var(--good); }
-.medium-seg { background: var(--medium); }
-.bad-seg { background: var(--bad); }
-
-
-/* SLIDERS */
+/* ======================================================
+   SLIDERS
+====================================================== */
 .slider-item {
   margin: 25px 0;
 }
@@ -219,9 +240,7 @@ h2 {
   font-weight: 600;
 }
 
-
-/* ===== RESTORE SLIDER STYLING ===== */
-
+/* Range input styling */
 input[type="range"] {
   -webkit-appearance: none;
   appearance: none;
@@ -232,7 +251,7 @@ input[type="range"] {
   outline: none;
 }
 
-/* WebKit (Chrome, Edge, Safari) */
+/* WebKit */
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
@@ -259,8 +278,41 @@ input[type="range"]::-moz-range-thumb {
   cursor: pointer;
 }
 
+/* ======================================================
+   THRESHOLD VISUALIZATION
+====================================================== */
+.threshold-bar {
+  height: 30px;
+  border-radius: 6px;
+  overflow: hidden;
+  display: flex;
+  margin-bottom: 10px;
+}
 
-/* BUTTONS */
+.threshold-segment {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--bg);
+  min-width: 60px;
+}
+
+.good-seg {
+  background: var(--good);
+}
+.medium-seg {
+  background: var(--medium);
+}
+.bad-seg {
+  background: var(--bad);
+}
+
+/* ======================================================
+   BUTTONS
+====================================================== */
 .action-buttons {
   margin-top: 25px;
   display: flex;
@@ -282,21 +334,55 @@ button {
 }
 
 .btn-reset {
-  background: rgba(255,255,255,0.1);
+  background: rgba(255, 255, 255, 0.1);
   color: var(--text);
 }
 
-/* CHART */
+/* ======================================================
+   CHART
+====================================================== */
+.chart-wrapper {
+  position: relative;
+  min-height: 260px;
+}
+
 canvas {
   width: 100% !important;
   max-height: 300px;
 }
 
-/* ERROR */
+.paused-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(11, 13, 18, 0.75);
+  backdrop-filter: blur(4px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  z-index: 10;
+  pointer-events: all;
+}
+
+.paused-overlay.active {
+  display: flex;
+}
+
+.paused-box {
+  padding: 14px 22px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  font-weight: 600;
+  color: #9ca3af;
+}
+
+/* ======================================================
+   ERROR MESSAGES
+====================================================== */
 .error-message {
   margin-top: 15px;
   padding: 12px;
-  background: rgba(248,113,113,0.15);
+  background: rgba(248, 113, 113, 0.15);
   border-left: 4px solid var(--bad);
   color: var(--bad);
   border-radius: 6px;

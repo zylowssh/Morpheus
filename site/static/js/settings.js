@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
     good_threshold: 800,
     bad_threshold: 1200,
     realistic_mode: true,
-    update_speed: 2
+    update_speed: 2,
   };
 
   function updateTexts() {
@@ -83,14 +83,14 @@ document.addEventListener("DOMContentLoaded", () => {
         good_threshold: +goodSlider.value,
         bad_threshold: +badSlider.value,
         realistic_mode: realisticMode.checked,
-        update_speed: +updateSpeed.value
-      })
+        update_speed: +updateSpeed.value,
+      }),
     });
   });
 
   resetBtn.addEventListener("click", loadSettings);
 
-  [toggle, goodSlider, badSlider, updateSpeed].forEach(el =>
+  [toggle, goodSlider, badSlider, updateSpeed].forEach((el) =>
     el.addEventListener("input", () => {
       updateTexts();
       updateVisualization();

@@ -76,17 +76,22 @@ def settings_page():
 # 3. API ROUTES
 @app.route("/api/latest")
 def api_latest():
+    # Always send analysis_running
     if not analysis_running:
-        return jsonify({"paused": True})
-    
+        return jsonify({
+            "analysis_running": False,
+            "ppm": None
+        })
+
     ppm = fake_read_co2()
     quality = get_air_quality(ppm)
-    
+
     history.append({"ppm": ppm, "quality": quality})
     if len(history) > MAX_HISTORY:
         history.pop(0)
-    
+
     return jsonify({
+        "analysis_running": True,
         "ppm": ppm,
         "quality": quality,
         "thresholds": {
@@ -94,6 +99,7 @@ def api_latest():
             "bad": sim_settings["bad_threshold"]
         }
     })
+
 
 @app.route("/api/history")
 def api_history():

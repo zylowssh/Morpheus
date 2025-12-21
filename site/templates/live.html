@@ -1,36 +1,87 @@
-{% extends "base.html" %}
-{% block content %}
+{% extends "base.html" %} {% block content %}
 
-  <section class="card">
-    <h2>Niveau de CO2</h2>
-    <div class="value-wrapper">
-        <span id="value" class="value">---</span>
-        <span id="trend" class="trend" aria-hidden="true"></span>
-    </div>
+<section class="card">
+  <h2>Niveau de CO2</h2>
+  <div class="value-wrapper">
+    <span id="value" class="value">---</span>
+    <svg id="trend" viewBox="0 0 24 24" aria-hidden="true">
+      <path id="trend-path" d="M5 12 H19 M14 7 L19 12 L14 17" />
+    </svg>
+  </div>
 
-    <div id="quality" class="quality">---</div>
-    
-    <div style="margin-top: 20px;">
-      <button id="export" class="link, btn-export" style="display: inline-block; margin-right: 15px;">
-        📥 Exporter CSV
+  <div id="quality" class="quality">---</div>
+
+  <div style="margin-top: 20px">
+    <button
+      id="export"
+      class="link btn-export"
+      style="display: inline-block; margin-right: 15px"
+    >
+      📥 Exporter CSV
+    </button>
+    <a href="/settings" class="link">⚙️ Paramètres</a>
+  </div>
+
+  <div
+    id="error-message"
+    style="
+      display: none;
+      margin-top: 15px;
+      padding: 10px;
+      background: rgba(248, 113, 113, 0.15);
+      border-radius: 6px;
+      color: #f87171;
+      font-size: 0.9rem;
+    "
+  ></div>
+</section>
+
+<section class="card">
+  <div
+    style="
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    "
+  >
+    <h2 style="margin: 0">Historique</h2>
+    <div>
+      <button
+        id="reset-btn"
+        style="
+          padding: 4px 10px;
+          margin-left: 5px;
+          background: rgba(255, 255, 255, 0.1);
+          border: none;
+          border-radius: 4px;
+          color: #9ca3af;
+          cursor: pointer;
+        "
+      >
+        ⟲
       </button>
-      <a href="/settings" class="link">⚙️ Paramètres</a>
     </div>
-    
-    <div id="error-message" style="display: none; margin-top: 15px; padding: 10px; background: rgba(248,113,113,0.15); border-radius: 6px; color: #f87171; font-size: 0.9rem;"></div>
-  </section>
-
-  <section class="card">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-      <h2 style="margin: 0;">Historique</h2>
-      <div>
-        <button id="reset-btn" style="padding: 4px 10px; margin-left: 5px; background: rgba(255,255,255,0.1); border: none; border-radius: 4px; color: #9ca3af; cursor: pointer;">⟲</button>
-      </div>
-    </div>
+  </div>
+  <div class="chart-wrapper">
     <canvas id="chart"></canvas>
-    <div style="display: flex; justify-content: space-between; margin-top: 10px; font-size: 0.85rem; color: #9ca3af;">
-      <span id="time-range">Simulation en direct</span>
+
+    <div id="paused-overlay" class="paused-overlay">
+      <div class="paused-box">⏸ Analyse en pause</div>
     </div>
-  </section>
+  </div>
+
+  <div
+    style="
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+      font-size: 0.85rem;
+      color: #9ca3af;
+    "
+  >
+    <span id="time-range">Simulation en direct</span>
+  </div>
+</section>
 
 {% endblock %}
