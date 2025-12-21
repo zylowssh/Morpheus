@@ -1,6 +1,13 @@
 let chart;
 let lastPPM = null;
 let pollInterval = null;
+let goodThreshold = 800;
+let mediumThreshold = 1200;
+let badThreshold = 1200;
+let prevGoodThreshold = goodThreshold;
+let prevBadThreshold = badThreshold;
+let bgFade = 1;
+let currentVisualPPM = null;
 let pollingDelay = 1000;
 
 const valueEl = document.getElementById("value");
@@ -11,7 +18,114 @@ const pausedOverlay = document.getElementById("paused-overlay");
 const exportBtn = document.getElementById("export");
 const resetBtn = document.getElementById("reset-btn");
 
+const navCenter = document.querySelector(".nav-center");
+const underline = document.querySelector(".nav-underline");
+const links = navCenter.querySelectorAll("a");
+
 const isLivePage = valueEl && qualityEl && chartCanvas;
+
+
+function easeOutCubic(t) {
+  return 1 - Math.pow(1 - t, 3);
+}
+
+if (navCenter && underline) {
+  const links = navCenter.querySelectorAll("a");
+  const path = window.location.pathname;
+
+  function getActiveLink() {
+    return [...links].find(link => {
+      const href = link.getAttribute("href");
+      return href === "/" ? path === "/" : path.startsWith(href);
+    });
+  }
+
+  function moveUnderline(el) {
+    if (!el) return;
+
+    const linkRect = el.getBoundingClientRect();
+    const parentRect = navCenter.getBoundingClientRect();
+
+    underline.style.width = `${linkRect.width}px`;
+    underline.style.left = `${linkRect.left - parentRect.left}px`;
+    underline.style.opacity = "1";
+  }
+
+  // ✅ Set active on load
+  const active = getActiveLink();
+  if (active) {
+    active.classList.add("active");
+    requestAnimationFrame(() => moveUnderline(active));
+  }
+
+  // Hover behavior
+  links.forEach(link => {
+    link.addEventListener("mouseenter", () => moveUnderline(link));
+  });
+
+  // ✅ Snap back to active when leaving nav
+  navCenter.addEventListener("mouseleave", () => {
+    moveUnderline(getActiveLink());
+  });
+
+  // Keep aligned on resize
+  window.addEventListener("resize", () => {
+    moveUnderline(getActiveLink());
+  });
+}
+
+const zoneBackgroundPlugin = {
+  id: "zoneBackground",
+  beforeDraw(chart) {
+    const { ctx, chartArea, scales } = chart;
+    if (!chartArea) return;
+
+    const { top, bottom, left, right } = chartArea;
+    const y = scales.y;
+
+    const good =
+      prevGoodThreshold + (goodThreshold - prevGoodThreshold) * bgFade;
+    const bad =
+      prevBadThreshold + (badThreshold - prevBadThreshold) * bgFade;
+
+    const yGood = y.getPixelForValue(good);
+    const yBad  = y.getPixelForValue(bad);
+
+    const gradient = ctx.createLinearGradient(0, top, 0, bottom);
+
+    // normalize
+    const gStop = (yGood - top) / (bottom - top);
+    const bStop = (yBad  - top) / (bottom - top);
+
+    // 🔥 COLLAPSED (no middle zone)
+    if (good === bad){
+      gradient.addColorStop(0, "rgba(248,113,113,0.20)");
+      gradient.addColorStop(bStop, "rgba(248,113,113,0.15)");
+
+      gradient.addColorStop(bStop, "rgba(74,222,128,0.18)");
+      gradient.addColorStop(1, "rgba(74,222,128,0.12)");
+    } 
+    // 🔥 NORMAL (3 zones)
+    else {
+      gradient.addColorStop(0, "rgba(248,113,113,0.20)");
+      gradient.addColorStop(bStop, "rgba(248,113,113,0.15)");
+
+      gradient.addColorStop(bStop, "rgba(250,204,21,0.18)");
+      gradient.addColorStop(gStop, "rgba(250,204,21,0.15)");
+
+      gradient.addColorStop(gStop, "rgba(74,222,128,0.18)");
+      gradient.addColorStop(1, "rgba(74,222,128,0.12)");
+    }
+
+    ctx.save();
+    ctx.fillStyle = gradient;
+    ctx.fillRect(left, top, right - left, bottom - top);
+    ctx.restore();
+  },
+};
+
+Chart.register(zoneBackgroundPlugin);
+
 
 /* =========================
    INIT
@@ -77,26 +191,83 @@ function updatePollingSpeed(seconds) {
    HELPERS
 ========================= */
 function ppmColor(ppm) {
-  if (ppm < 800) return "#4ade80";
-  if (ppm < 1200) return "#facc15";
+  // collapsed → 2 zones only
+  if (goodThreshold === badThreshold) {
+    return ppm < goodThreshold ? "#4ade80" : "#f87171";
+  }
+
+  // normal
+  if (ppm < goodThreshold) return "#4ade80";
+  if (ppm < badThreshold)  return "#facc15";
   return "#f87171";
 }
 
+function lerp(a, b, t) {
+  return a + (b - a) * t;
+}
+
+function lerpColor(c1, c2, t) {
+  return `rgb(
+    ${Math.round(lerp(c1[0], c2[0], t))},
+    ${Math.round(lerp(c1[1], c2[1], t))},
+    ${Math.round(lerp(c1[2], c2[2], t))}
+  )`;
+}
+
+function ppmColorSmooth(ppm) {
+  const green  = [74, 222, 128];
+  const yellow = [250, 204, 21];
+  const red    = [248, 113, 113];
+
+  if (ppm <= goodThreshold) return `rgb(${green})`;
+
+  if (ppm <= badThreshold) {
+    const t = (ppm - goodThreshold) / (badThreshold - goodThreshold);
+    return lerpColor(green, yellow, t);
+  }
+
+  const t = Math.min((ppm - badThreshold) / badThreshold, 1);
+  return lerpColor(yellow, red, t);
+}
+
 function qualityText(ppm) {
-  if (ppm < 800) return "Bon";
-  if (ppm < 1200) return "Moyen";
+  if (goodThreshold === badThreshold) {
+    return ppm < goodThreshold ? "Bon" : "Mauvais";
+  }
+
+  if (ppm < goodThreshold) return "Bon";
+  if (ppm < badThreshold) return "Moyen";
   return "Mauvais";
 }
 
 async function loadLiveSettings() {
-  try {
-    const res = await fetch("/api/settings");
-    const s = await res.json();
-    updatePollingSpeed(s.update_speed || 1);
-  } catch {
-    updatePollingSpeed(1);
+  const res = await fetch("/api/settings");
+  const s = await res.json();
+
+  prevGoodThreshold = goodThreshold;
+  prevBadThreshold  = badThreshold;
+
+  goodThreshold = Math.min(s.good_threshold, 2000 - 50);
+  badThreshold  = Math.min(s.bad_threshold, 2000);
+
+  updatePollingSpeed(s.update_speed || 1);
+
+  bgFade = 0;
+
+  const start = performance.now();
+  const duration = 500;
+
+  function animateFade(time) {
+    const t = Math.min((time - start) / duration, 1);
+    bgFade = easeOutCubic(t);
+    chart.update("none"); // redraw without restarting animations
+
+    if (t < 1) requestAnimationFrame(animateFade);
   }
+
+  requestAnimationFrame(animateFade);
 }
+
 
 /* =========================
    CHART
@@ -108,23 +279,88 @@ function createChart() {
       labels: [],
       datasets: [
         {
+          label: "CO₂",
           data: [],
-          borderWidth: 2,
+          borderWidth: 3,
+          borderCapStyle: "round",
+          borderJoinStyle: "round",
           tension: 0.35,
+
+          // 👇 CONTRASTING CURVE AREA
+          fill: true,
+          backgroundColor: "rgba(11,13,18,0.30)",
+
+          // 👇 color per segment
+          borderColor: "#9ca3af",
           segment: {
-            borderColor: (ctx) => ppmColor(ctx.p1.parsed.y),
+            borderColor: ctx => {
+              const v = ctx.p1?.parsed?.y;
+              return v == null ? "#9ca3af" : ppmColor(v);
+            },
+          },
+
+          pointBorderWidth: 2,
+          pointBorderColor: "#0b0d12",
+          pointRadius: 4,
+          pointHoverRadius: 6,
+          pointBackgroundColor: ctx => {
+            const v = ctx.parsed?.y;
+            return v == null ? "#9ca3af" : ppmColor(v);
           },
         },
       ],
     },
     options: {
       responsive: true,
-      plugins: { legend: { display: false } },
-      scales: {
-        y: { min: 400, max: 2000 },
+      animation: {
+        duration: 450,
+        easing: "easeOutQuart",
       },
-    },
+      plugins: {
+        legend: { display: false },
+      },
+      scales: {
+        y: {
+          min: 400,
+          max: 2000,
+          grid: {
+            color: "rgba(255,255,255,0.06)",
+          },
+        },
+        x: {
+          grid: {
+            color: "rgba(255,255,255,0.04)",
+          },
+        },
+      },
+    }
   });
+}
+
+function gradientBackground(ctx) {
+  const chart = ctx.chart;
+  const { ctx: canvasCtx, chartArea } = chart;
+
+  if (!chartArea) return null;
+
+  const { top, bottom } = chartArea;
+
+  const gradient = canvasCtx.createLinearGradient(0, top, 0, bottom);
+
+  // Normalize thresholds to chart scale
+  const goodStop = 1 - (goodThreshold - 400) / (2000 - 400);
+  const badStop  = 1 - (badThreshold - 400) / (2000 - 400);
+
+  gradient.addColorStop(0, "rgba(248,113,113,0.35)");   // 🔴 top
+  gradient.addColorStop(badStop, "rgba(248,113,113,0.20)");
+
+  gradient.addColorStop(badStop, "rgba(250,204,21,0.22)");
+  gradient.addColorStop(goodStop, "rgba(250,204,21,0.18)");
+
+  gradient.addColorStop(goodStop, "rgba(74,222,128,0.20)");
+  gradient.addColorStop(1, "rgba(74,222,128,0.05)");
+
+  return gradient;
 }
 
 /* =========================
@@ -159,7 +395,11 @@ function animateValue(ppm) {
     setTimeout(() => valueEl.classList.remove("glow"), 400);
   }
 
-
+  if (ppm >= badThreshold) {
+    valueEl.classList.add("danger");
+  } else {
+    valueEl.classList.remove("danger");
+  }
 
   lastPPM = ppm;
 }

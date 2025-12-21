@@ -1,16 +1,50 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="card revealed">
-  <h2>Aerium – CO₂ Monitor</h2>
-  <p class="hint revealed">
-    Projet scolaire simulant la surveillance du CO₂ en temps réel.
+<section class="card">
+  <h2>Aerium — Surveillance CO₂</h2>
+  <p class="hint">
+    Plateforme de simulation et de visualisation de la qualité de l’air en temps réel.
   </p>
+</section>
 
-  <div class="action-buttons revealed">
-    <a class="link" href="/live">Voir les données en direct</a>
-    <a class="link" href="/settings">Configurer la simulation</a>
+<section class="card">
+  <h2>État du système</h2>
+
+  <div class="overview-grid">
+    <div class="overview-widget good">
+      <span class="label">Capteur</span>
+      <span class="value">Simulé</span>
+    </div>
+
+    <div class="overview-widget">
+      <span class="label">Analyse en direct</span>
+      <span class="value">Active</span>
+    </div>
+
+    <div class="overview-widget">
+      <span class="label">Seuils CO₂</span>
+      <span class="value">800 / 1200 ppm</span>
+    </div>
   </div>
-</div>
+</section>
+
+<section class="card">
+  <h2>Accès rapide</h2>
+
+  <div class="action-buttons">
+    <a class="link primary" href="/live">📊 Données en direct</a>
+    <a class="link" href="/settings">⚙️ Paramètres</a>
+  </div>
+</section>
+
+<section class="card">
+  <h2>À propos</h2>
+  <p class="hint">
+    Aerium est un projet scolaire visant à démontrer la surveillance intelligente
+    de la qualité de l’air via capteur CO₂, avec indicateurs visuels, seuils
+    personnalisables et historique.
+  </p>
+</section>
 
 {% endblock %}
