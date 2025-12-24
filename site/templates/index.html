@@ -1,34 +1,87 @@
 {% extends "base.html" %}
 {% block content %}
 
-<section class="card">
-  <h2>Aerium — Surveillance CO₂</h2>
-  <p class="hint">
-    Plateforme de simulation et de visualisation de la qualité de l’air en temps réel.
-  </p>
-</section>
+<!-- ================= HERO ================= -->
+<section class="hero">
+  <div class="hero-content">
+    <h1>Aerium</h1>
+    <p class="hero-sub">
+      Surveillance intelligente de la qualité de l’air en temps réel
+    </p>
 
-<section class="card">
-  <h2>État du système</h2>
-
-  <div class="overview-grid">
-    <div class="overview-widget good">
-      <span class="label">Capteur</span>
-      <span class="value">Simulé</span>
-    </div>
-
-    <div class="overview-widget">
-      <span class="label">Analyse en direct</span>
-      <span class="value">Active</span>
-    </div>
-
-    <div class="overview-widget">
-      <span class="label">Seuils CO₂</span>
-      <span class="value">800 / 1200 ppm</span>
+    <div class="hero-actions">
+      <a href="/live" class="link primary">📊 Voir le live</a>
+      <button id="export-day-csv" class="link">📥 Export CSV</button>
+      <button id="export-day-pdf" class="link">📄 Export PDF</button>
     </div>
   </div>
 </section>
 
+<!-- ================= DAILY STATS ================= -->
+<section class="card">
+  <h2>Aujourd’hui en chiffres</h2>
+
+  <div class="overview-grid">
+    <div class="overview-widget">
+      <span class="label">Moyenne CO₂</span>
+      <span class="value" id="avg-ppm">—</span>
+    </div>
+
+    <div class="overview-widget">
+      <span class="label">Pic maximum</span>
+      <span class="value" id="max-ppm">—</span>
+    </div>
+
+    <div class="overview-widget">
+      <span class="label">Temps en air dégradé</span>
+      <span class="value" id="bad-time">—</span>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SYSTEM STATUS ================= -->
+<section class="card">
+  <h2>État du système</h2>
+
+  <div class="system-status-row">
+    <!-- LEFT: existing content -->
+    <div class="system-status-main">
+      <div class="card air-health">
+        <div class="air-status" id="air-status">—</div>
+        <div class="air-sub" id="air-sub">
+          CO₂ actuel · — ppm
+        </div>
+      </div>
+
+      <div class="overview-grid">
+        <div class="overview-widget good">
+          <span class="label">Capteur</span>
+          <span class="value">Simulé</span>
+        </div>
+
+        <div class="overview-widget" id="analysis-widget">
+          <span class="label">Analyse</span>
+          <span class="value" id="analysis-status">Active</span>
+        </div>
+
+        <div class="overview-widget">
+          <span class="label">Seuils CO₂</span>
+          <span class="value" id="co2-thresholds">800 / 1200 ppm</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: mini CO₂ thermometer -->
+    <div class="co2-thermo">
+      <div class="co2-track">
+        <div class="co2-fill" id="co2-fill"></div>
+      </div>
+      <div class="co2-value" id="co2-mini-value">— ppm</div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= QUICK ACCESS ================= -->
 <section class="card">
   <h2>Accès rapide</h2>
 
@@ -38,12 +91,12 @@
   </div>
 </section>
 
+<!-- ================= ABOUT ================= -->
 <section class="card">
   <h2>À propos</h2>
   <p class="hint">
-    Aerium est un projet scolaire visant à démontrer la surveillance intelligente
-    de la qualité de l’air via capteur CO₂, avec indicateurs visuels, seuils
-    personnalisables et historique.
+    Aerium est un projet démontrant la surveillance intelligente de la qualité de l’air
+    via capteur CO₂, avec indicateurs visuels, seuils personnalisables et export de données.
   </p>
 </section>
 

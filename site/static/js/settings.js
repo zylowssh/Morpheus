@@ -234,6 +234,7 @@ document.addEventListener("DOMContentLoaded", () => {
     resetBtn.classList.add("btn-resetting");
     resetBtn.textContent = "↺ Réinitialisé";
 
+    await fetch("/api/settings", { method: "DELETE" });
     await loadSettings();
 
     setTimeout(() => {
@@ -241,6 +242,7 @@ document.addEventListener("DOMContentLoaded", () => {
       resetBtn.classList.remove("btn-resetting");
     }, 700);
   });
+
 
   /* =========================
      LIVE INPUT

@@ -25,15 +25,17 @@ body {
   color: var(--text);
   font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   min-height: 100vh;
+  opacity: 1;
+  animation: none !important;
 }
 
 /* ======================================================
    LAYOUT
 ====================================================== */
 .container {
-  max-width: 900px;
-  margin: 0 auto;
+  max-width: 1100px;
   padding: 20px;
+  margin: 0 auto;
 }
 
 /* ======================================================
@@ -72,8 +74,8 @@ body {
   position: relative;
   display: flex;
   justify-content: center;
-  letter-spacing: 0.2px;
   gap: 6px;
+  letter-spacing: 0.2px;
 }
 
 .nav-center a {
@@ -112,24 +114,46 @@ body {
 }
 
 /* RIGHT */
+.nav-right {
+  min-width: 170px;
+  justify-content: flex-end;
+}
+
 .nav-status {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 0.85rem;
-  color: var(--muted);
+  gap: 8px;
+  font-weight: 500;
+  transition: color 0.25s ease;
 }
 
 .nav-status .dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: currentColor;
+  background: #9ca3af;
+  transition: background 0.25s ease, box-shadow 0.25s ease;
 }
 
-.nav-status.good { color: var(--good); }
-.nav-status.warn { color: var(--medium); }
-.nav-status.bad  { color: var(--bad); }
+/* RUNNING */
+.nav-status.is-running {
+  color: #4ade80;
+}
+
+.nav-status.is-running .dot {
+  background: #4ade80;
+  box-shadow: 0 0 6px rgba(74,222,128,0.6);
+}
+
+/* PAUSED */
+.nav-status.is-paused {
+  color: #f87171;
+}
+
+.nav-status.is-paused .dot {
+  background: #f87171;
+  box-shadow: 0 0 6px rgba(248,113,113,0.6);
+}
 
 
 /* ======================================================
@@ -141,21 +165,146 @@ body {
   border-radius: 14px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   margin-bottom: 20px;
-  overflow: visible;
   border: 1px solid rgba(255, 255, 255, 0.05);
+  opacity: 1;
+  transform: none;
 }
 
 h2 {
   font-size: 1.5rem;
+  font-weight: 600;
   margin-bottom: 15px;
 }
 
 /* ======================================================
-   VALUE DISPLAY (LIVE PAGE)
+   LINKS
+====================================================== */
+.link {
+  display: inline-block;
+  color: var(--muted);
+  padding: 8px 16px;
+  border-radius: 8px;
+  text-decoration: none;
+}
+
+.link:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text);
+}
+
+.link.primary {
+  background: var(--good);
+  color: var(--bg);
+  font-weight: 600;
+}
+
+/* ======================================================
+   HERO SECTION
+====================================================== */
+.hero {
+  max-width: 100%;
+  margin-bottom: 25px;
+  padding: 40px 25px;
+  border-radius: 18px;
+  background: linear-gradient(
+    135deg,
+    rgba(74, 222, 128, 0.18),
+    rgba(11, 13, 18, 0.9)
+  );
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.hero-content {
+  max-width: 700px;
+}
+
+.hero h1 {
+  font-size: 2.4rem;
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+
+.hero-sub {
+  font-size: 1rem;
+  color: var(--muted);
+  margin-bottom: 20px;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* ======================================================
+   HERO ANIMATION (SUBTLE)
+====================================================== */
+.hero {
+  animation: heroFade 0.8s ease-out both;
+}
+
+@keyframes heroFade {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ======================================================
+   SIDEBAR (DESKTOP ONLY)
+
+.sidebar {
+  position: fixed;
+  top: 58px;
+  left: 0;
+  width: 220px;
+  height: calc(100vh - 58px);
+  background: rgba(11, 13, 18, 0.95);
+  border-right: 1px solid rgba(255,255,255,0.06);
+  padding: 16px;
+  display: none;
+}
+
+.sidebar a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  color: var(--muted);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.sidebar a.active,
+.sidebar a:hover {
+  background: rgba(255,255,255,0.06);
+  color: var(--good);
+}
+
+@media (min-width: 900px) {
+  .sidebar {
+    display: block;
+  }
+
+  .container {
+    margin-left: 220px;
+    margin-right: auto;
+    max-width: calc(1100px + 220px);
+  }
+}
+====================================================== */
+
+/* ======================================================
+   LIVE PAGE — VALUE DISPLAY
 ====================================================== */
 .value-wrapper {
   display: flex;
-  align-items: center; /* 🔥 */
+  align-items: center;
   gap: 7px;
 }
 
@@ -163,9 +312,9 @@ h2 {
   font-size: 3rem;
   font-weight: 700;
   margin: 10px 0;
-  transition: color 0.25s ease, transform 0.25s ease;
   display: flex;
   align-items: center;
+  transition: color 0.25s ease, transform 0.25s ease;
 }
 
 .value.bump {
@@ -176,35 +325,24 @@ h2 {
   text-shadow: 0 0 18px rgba(248, 113, 113, 0.8);
 }
 
-@keyframes dangerPulse {
-  0% {
-    text-shadow: 0 0 0 rgba(248, 113, 113, 0);
-  }
-  50% {
-    text-shadow: 0 0 18px rgba(248, 113, 113, 0.9);
-  }
-  100% {
-    text-shadow: 0 0 0 rgba(248, 113, 113, 0);
-  }
-}
-
 .value.danger {
   animation: dangerPulse 1.4s ease-in-out infinite;
+}
+
+@keyframes dangerPulse {
+  0% { text-shadow: 0 0 0 rgba(248, 113, 113, 0); }
+  50% { text-shadow: 0 0 18px rgba(248, 113, 113, 0.9); }
+  100% { text-shadow: 0 0 0 rgba(248, 113, 113, 0); }
 }
 
 #trend {
   width: 3em;
   height: 3em;
-
   display: inline-flex;
   align-items: center;
   justify-content: center;
-
-  margin-top: 15px; /* optical alignment with numbers */
-
-  transform-box: fill-box;
+  margin-top: 15px;
   transform-origin: center;
-
   transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), color 0.3s ease;
 }
 
@@ -214,10 +352,6 @@ h2 {
   stroke-width: 2.8;
   stroke-linecap: round;
   stroke-linejoin: round;
-}
-
-#trend.bump path {
-  transform: scale(1.15);
 }
 
 .quality {
@@ -230,22 +364,6 @@ h2 {
 }
 
 /* ======================================================
-   LINKS
-====================================================== */
-.link {
-  display: inline-block;
-  color: var(--muted);
-  text-decoration: none;
-  padding: 8px 16px;
-  border-radius: 8px;
-}
-
-.link:hover {
-  background: rgba(255, 255, 255, 0.05);
-  color: var(--text);
-}
-
-/* ======================================================
    TOGGLES / SWITCHES
 ====================================================== */
 .switch-row {
@@ -253,6 +371,12 @@ h2 {
   justify-content: space-between;
   align-items: center;
   margin: 15px 0;
+  padding: 10px 0;
+}
+
+.switch-label {
+  font-weight: 500;
+  font-size: 1rem;
 }
 
 .toggle {
@@ -261,9 +385,7 @@ h2 {
   height: 30px;
 }
 
-.toggle input {
-  display: none;
-}
+.toggle input { display: none; }
 
 .track {
   position: absolute;
@@ -294,13 +416,14 @@ h2 {
 /* ======================================================
    SLIDERS
 ====================================================== */
-.slider-item {
-  margin: 25px 0;
-}
+.slider-group { margin: 20px 0; }
+
+.slider-item { margin: 25px 0; }
 
 .slider-label {
   margin-bottom: 10px;
   color: var(--muted);
+  font-weight: 500;
 }
 
 .slider-values {
@@ -316,35 +439,17 @@ h2 {
   font-weight: 600;
 }
 
-/* Range input styling */
 input[type="range"] {
-  -webkit-appearance: none;
-  appearance: none;
   width: 100%;
   height: 6px;
   background: rgba(255, 255, 255, 0.15);
   border-radius: 4px;
   outline: none;
-}
-
-/* WebKit */
-input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none;
   appearance: none;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: var(--good);
-  border: 2px solid var(--card);
-  cursor: pointer;
-  transition: transform 0.15s ease;
 }
 
-input[type="range"]::-webkit-slider-thumb:hover {
-  transform: scale(1.1);
-}
-
-/* Firefox */
+/* thumbs */
+input[type="range"]::-webkit-slider-thumb,
 input[type="range"]::-moz-range-thumb {
   width: 20px;
   height: 20px;
@@ -354,9 +459,19 @@ input[type="range"]::-moz-range-thumb {
   cursor: pointer;
 }
 
+
+
 /* ======================================================
    THRESHOLD VISUALIZATION
 ====================================================== */
+.threshold-visual {
+  margin-top: 30px;
+  padding: 15px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
 .threshold-bar {
   height: 30px;
   border-radius: 6px;
@@ -367,24 +482,35 @@ input[type="range"]::-moz-range-thumb {
 
 .threshold-segment {
   height: 100%;
+  min-width: 60px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 600;
   font-size: 0.85rem;
   color: var(--bg);
-  min-width: 60px;
 }
 
-.good-seg {
-  background: var(--good);
+.good-seg { background: var(--good); }
+.medium-seg { background: var(--medium); }
+.bad-seg { background: var(--bad); }
+
+.threshold-labels {
+  position: relative;
+  height: 20px;
+  margin-top: 8px;
+  font-size: 0.8rem;
+  color: var(--muted);
 }
-.medium-seg {
-  background: var(--medium);
+
+.threshold-labels .label {
+  position: absolute;
+  transform: translateX(-50%);
+  white-space: nowrap;
 }
-.bad-seg {
-  background: var(--bad);
-}
+
+.threshold-labels .min { left: 0%; transform: none; }
+.threshold-labels .max { right: 0%; transform: none; }
 
 /* ======================================================
    BUTTONS
@@ -393,6 +519,7 @@ input[type="range"]::-moz-range-thumb {
   margin-top: 25px;
   display: flex;
   gap: 15px;
+  align-items: center;
 }
 
 button {
@@ -412,6 +539,24 @@ button {
 .btn-reset {
   background: rgba(255, 255, 255, 0.1);
   color: var(--text);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: transform 0.15s ease, background 0.25s ease;
+}
+
+.btn-reset:active {
+  transform: scale(0.96);
+}
+
+.btn-resetting {
+  background: rgba(74, 222, 128, 0.2) !important;
+  color: var(--good) !important;
+  animation: resetPop 0.35s ease-out;
+}
+
+@keyframes resetPop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.06); }
+  100% { transform: scale(1); }
 }
 
 /* ======================================================
@@ -425,6 +570,7 @@ button {
 canvas {
   width: 100% !important;
   max-height: 300px;
+  opacity: 1 !important;
 }
 
 .paused-overlay {
@@ -437,7 +583,6 @@ canvas {
   justify-content: center;
   border-radius: 14px;
   z-index: 10;
-  pointer-events: all;
 }
 
 .paused-overlay.active {
@@ -453,321 +598,8 @@ canvas {
 }
 
 /* ======================================================
-   ERROR MESSAGES
+   OVERVIEW PAGE
 ====================================================== */
-.error-message {
-  margin-top: 15px;
-  padding: 12px;
-  background: rgba(248, 113, 113, 0.15);
-  border-left: 4px solid var(--bad);
-  color: var(--bad);
-  border-radius: 6px;
-  display: none;
-}
-
-/* ======================================================
-   OLD SETTINGS PAGE — STATIC 1:1 MATCH
-====================================================== */
-/* ---------- BODY ---------- */
-body {
-  opacity: 1;
-}
-
-/* ---------- CARDS ---------- */
-.card {
-  opacity: 1;
-  transform: none;
-  background: var(--card);
-  padding: 25px;
-  border-radius: 14px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-/* ---------- HEADINGS ---------- */
-h2 {
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin-bottom: 15px;
-}
-
-/* ---------- SWITCH ROW ---------- */
-.switch-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin: 15px 0;
-  padding: 10px 0;
-}
-
-.switch-label {
-  font-weight: 500;
-  font-size: 1rem;
-}
-
-/* ---------- STATUS TEXT ---------- */
-.status-text {
-  font-size: 0.8rem;
-  margin-top: 6px;
-  margin-left: 2px;
-  font-weight: 500;
-  opacity: 0.85;
-  transition:
-    color 0.25s ease,
-    transform 0.25s ease,
-    opacity 0.25s ease;
-}
-
-.status-text.on {
-  color: var(--good);
-  transform: translateY(0);
-  opacity: 0.9;
-}
-
-.status-text.off {
-  color: var(--bad);
-  transform: translateY(1px);
-  opacity: 0.85;
-}
-
-/* ---------- SLIDERS ---------- */
-.slider-group {
-  margin: 20px 0;
-}
-
-.slider-item {
-  margin: 25px 0;
-}
-
-.slider-label {
-  display: block;
-  margin-bottom: 10px;
-  color: var(--muted);
-  font-weight: 500;
-}
-
-.slider-values {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 8px;
-  font-size: 0.85rem;
-  color: var(--muted);
-}
-
-.slider-current {
-  color: var(--good);
-  font-weight: 600;
-}
-
-/* ---------- RANGE INPUT ---------- */
-input[type="range"] {
-  width: 100%;
-  height: 6px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 3px;
-  outline: none;
-}
-
-input[type="range"]::-webkit-slider-thumb {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: var(--good);
-  border: 2px solid var(--card);
-}
-
-input[type="range"]::-moz-range-thumb {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: var(--good);
-  border: 2px solid var(--card);
-}
-
-/* ---------- THRESHOLD VISUAL ---------- */
-.threshold-visual {
-  margin-top: 30px;
-  padding: 15px;
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.threshold-bar {
-  height: 30px;
-  border-radius: 6px;
-  overflow: hidden;
-  display: flex;
-  margin-bottom: 10px;
-}
-
-.threshold-segment {
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 600;
-  font-size: 0.85rem;
-  color: var(--bg);
-  min-width: 60px;
-}
-
-.good-seg {
-  background: var(--good);
-}
-.medium-seg {
-  background: var(--medium);
-}
-.bad-seg {
-  background: var(--bad);
-}
-
-.threshold-labels {
-  position: relative;
-  height: 20px;
-  margin-top: 8px;
-  font-size: 0.8rem;
-  color: var(--muted);
-}
-
-.threshold-labels .label {
-  position: absolute;
-  transform: translateX(-50%);
-  white-space: nowrap;
-}
-
-.threshold-labels .min {
-  left: 0%;
-  transform: none;
-}
-.threshold-labels .max {
-  right: 0%;
-  transform: none;
-}
-
-/* ---------- HINT TEXT ---------- */
-.hint {
-  margin-top: 8px;
-  font-size: 0.9rem;
-  color: var(--muted);
-  font-style: italic;
-  opacity: 1;
-}
-
-/* ---------- ACTION BUTTONS ---------- */
-.action-buttons {
-  margin-top: 30px;
-  display: flex;
-  gap: 15px;
-  align-items: center;
-}
-
-.btn-save,
-.btn-export {
-  background: var(--good);
-  color: var(--bg);
-}
-
-.btn-reset {
-  background: rgba(255, 255, 255, 0.1);
-  color: var(--text);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-/* ---------- LINKS ---------- */
-.link {
-  color: var(--muted);
-  padding: 8px 16px;
-  border-radius: 8px;
-  text-decoration: none;
-}
-
-/* ---------- REMOVE LOADING / PLACEHOLDERS ---------- */
-.loading-pulse,
-.chart-placeholder,
-.spinner {
-  display: none !important;
-}
-
-.btn-saved {
-  background: var(--good);
-  color: var(--bg);
-  animation: savePop 0.4s ease-out;
-}
-
-@keyframes savePop {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.06);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-
-/* ======================================================
-   DISABLE PAGE-LOAD / LOADING ANIMATIONS ONLY
-====================================================== */
-
-/* Body should appear immediately */
-body {
-  opacity: 1 !important;
-  animation: none !important;
-}
-
-/* Disable reveal system */
-.revealed {
-  opacity: 1 !important;
-  transform: none !important;
-}
-
-/* Disable loading pulse */
-.loading-pulse {
-  animation: none !important;
-}
-
-/* Disable chart loading overlay */
-.chart-placeholder,
-.chart-placeholder.visible,
-.spinner {
-  display: none !important;
-}
-
-/* Canvas visible immediately */
-canvas {
-  opacity: 1 !important;
-}
-
-
-.btn-reset {
-  transition: transform 0.15s ease, background 0.25s ease;
-}
-
-.btn-reset:active {
-  transform: scale(0.96);
-}
-
-.btn-resetting {
-  background: rgba(74, 222, 128, 0.2) !important;
-  color: var(--good) !important;
-  animation: resetPop 0.35s ease-out;
-}
-
-@keyframes resetPop {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.06);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-
-
 .overview-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -779,10 +611,10 @@ canvas {
   background: rgba(255, 255, 255, 0.04);
   border-radius: 12px;
   padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
   display: flex;
   flex-direction: column;
   gap: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .overview-widget .label {
@@ -799,8 +631,136 @@ canvas {
   border-color: rgba(74, 222, 128, 0.3);
 }
 
-.link.primary {
+.air-health {
+  text-align: center;
+  padding: 30px;
+}
+
+.air-status {
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.air-sub {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.air-health.good .air-status { color: var(--good); }
+.air-health.medium .air-status { color: var(--medium); }
+.air-health.bad .air-status { color: var(--bad); }
+
+.air-health.paused {
+  opacity: 0.6;
+  filter: grayscale(1);
+}
+
+.air-health.paused #air-status {
+  color: #9ca3af;
+}
+
+/* ======================================================
+   SYSTEM STATUS – INLINE CO₂ THERMOMETER
+====================================================== */
+.system-status-row {
+  display: flex;
+  align-items: stretch;
+  gap: 24px;
+}
+
+.system-status-main {
+  flex: 1;
+}
+
+/* Thermometer container */
+.co2-thermo {
+  width: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+/* Track */
+.co2-track {
+  width: 8px;
+  height: 140px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 999px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Fill */
+.co2-fill {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 0%;
   background: var(--good);
-  color: var(--bg);
-  font-weight: 600;
+  border-radius: 999px;
+  transition: height 0.4s ease, background 0.3s ease;
+}
+
+/* Small value label */
+.co2-value {
+  font-size: 0.7rem;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+/* Mobile: hide thermometer (optional but recommended) */
+@media (max-width: 700px) {
+  .co2-thermo {
+    display: none;
+  }
+}
+
+/* ======================================================
+   STATUS CHANGE ANIMATION
+====================================================== */
+
+.air-health {
+  transition: border-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+.air-health.status-change {
+  animation: statusPulse 0.5s ease;
+}
+
+@keyframes statusPulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+
+/* ======================================================
+   MEDIA QUERIES
+====================================================== */
+@media (max-width: 600px) {
+  .overview-grid { grid-template-columns: 1fr; }
+  .air-status { font-size: 1.8rem; }
+  .action-buttons { flex-direction: column; }
+}
+
+
+.blink-warning {
+  animation: blink-red 0.9s ease-in-out;
+}
+
+@keyframes blink-red {
+  0%   { color: #f87171; }
+  25%  { color: white; }
+  50%  { color: #f87171; }
+  75%  { color: white; }
+  100% { color: #f87171; }
 }

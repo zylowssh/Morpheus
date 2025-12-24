@@ -1,15 +1,21 @@
+# fake_co2.py
 import random
+from database import get_db
 
-def read_co2():
-    """Return fake CO₂ value (ppm)."""
-    return random.randint(400, 2000)
+def generate_co2(realistic=True, base=500):
+    if realistic:
+        drift = random.uniform(-30, 50)
+        value = base + drift
+    else:
+        value = random.randint(400, 2000)
 
-def air_quality(ppm: int) -> str:
-    if ppm < 800:
-        return "Bon"
-    elif ppm < 1200:
-        return "Moyen"
-    return "Mauvais"
+    return int(max(400, min(2000, value)))
 
-def alert(ppm: int, threshold: int = 1200) -> bool:
-    return ppm > threshold
+def save_reading(ppm: int):
+    db = get_db()
+    db.execute(
+        "INSERT INTO co2_readings (ppm) VALUES (?)",
+        (ppm,)
+    )
+    db.commit()
+    db.close()

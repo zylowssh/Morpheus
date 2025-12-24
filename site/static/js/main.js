@@ -8,7 +8,14 @@ let prevGoodThreshold = goodThreshold;
 let prevBadThreshold = badThreshold;
 let bgFade = 1;
 let currentVisualPPM = null;
+let analysisRunning = true;
 let pollingDelay = 1000;
+let historyOffset = 0;
+let autoScroll = true;
+let fullHistory = [];
+
+const MAX_POINTS = 20;
+const historyScroll = document.getElementById("history-scroll");
 
 const valueEl = document.getElementById("value");
 const trendEl = document.getElementById("trend");
@@ -22,14 +29,120 @@ const navCenter = document.querySelector(".nav-center");
 const underline = document.querySelector(".nav-underline");
 const links = navCenter.querySelectorAll("a");
 
-const isLivePage = valueEl && qualityEl && chartCanvas;
+const isLivePage = !!(valueEl && qualityEl && chartCanvas);
+const isOverviewPage = !!document.querySelector(".air-health");
 
 
 function easeOutCubic(t) {
   return 1 - Math.pow(1 - t, 3);
 }
 
-if (navCenter && underline) {
+function forceLayout(el) {
+  el.getBoundingClientRect(); // forces reflow
+}
+
+if (historyScroll) {
+  historyScroll.addEventListener("input", () => {
+    historyOffset = Number(historyScroll.value);
+
+    autoScroll =
+      historyOffset >= fullHistory.length - MAX_POINTS;
+
+    updateChartWindow();
+  });
+}
+
+function startSystemStateWatcher() {
+  setInterval(async () => {
+    try {
+      const state = await loadSystemState();
+      updateNavAnalysisState(state.analysis_running);
+    } catch (e) {
+      console.warn("Failed to refresh system state");
+    }
+  }, 2000);
+}
+
+let lastSubPPM = null;
+
+function animateSubValue(ppm, el) {
+  if (!el) return;
+
+  if (lastSubPPM === null) {
+    el.textContent = `CO₂ actuel · ${ppm} ppm`;
+    el.style.color = ppmColor(ppm);
+    lastSubPPM = ppm;
+    return;
+  }
+
+  const start = lastSubPPM;
+  const duration = 500;
+  const startTime = performance.now();
+
+  function animate(time) {
+    const progress = Math.min((time - startTime) / duration, 1);
+    const eased = easeOutCubic(progress);
+    const current = Math.round(start + (ppm - start) * eased);
+
+    el.textContent = `CO₂ actuel · ${current} ppm`;
+
+    if (progress < 1) requestAnimationFrame(animate);
+  }
+
+  requestAnimationFrame(animate);
+
+  el.style.color = ppmColor(ppm);
+
+  /* 🔥 blink when crossing 1200 */
+  if (lastSubPPM < badThreshold && ppm >= badThreshold) {
+    el.classList.add("blink-warning");
+    setTimeout(() => el.classList.remove("blink-warning"), 900);
+  }
+
+  lastSubPPM = ppm;
+}
+
+function updateNavAnalysisState(isRunning) {
+  const nav = document.getElementById("nav-analysis");
+  const label = document.getElementById("nav-analysis-label");
+
+  if (!nav || !label) return;
+
+  nav.classList.remove("is-running", "is-paused");
+
+  if (isRunning) {
+    nav.classList.add("is-running");
+    label.textContent = "Analyse active";
+  } else {
+    nav.classList.add("is-paused");
+    label.textContent = "Analyse en pause";
+  }
+}
+
+async function loadSystemState() {
+  const res = await fetch("/api/settings");
+  return await res.json();
+}
+
+async function loadSharedSettings() {
+  try {
+    const res = await fetch("/api/settings");
+    const s = await res.json();
+
+    goodThreshold = s.good_threshold;
+    badThreshold  = s.bad_threshold;
+    mediumThreshold = badThreshold;
+  } catch (e) {
+    console.warn("Failed to load shared settings");
+  }
+}
+
+async function loadSystemState() {
+  const res = await fetch("/api/settings");
+  return await res.json();
+}
+
+if (navCenter && underline && links.length) {
   const links = navCenter.querySelectorAll("a");
   const path = window.location.pathname;
 
@@ -55,7 +168,20 @@ if (navCenter && underline) {
   const active = getActiveLink();
   if (active) {
     active.classList.add("active");
-    requestAnimationFrame(() => moveUnderline(active));
+
+    window.addEventListener("load", async () => {
+      // ✅ wait for fonts (critical)
+      if (document.fonts?.ready) {
+        await document.fonts.ready;
+      }
+
+      // ✅ force flexbox layout resolution
+      forceLayout(navCenter);
+      forceLayout(active);
+
+      // ✅ now measurements are correct
+      moveUnderline(active);
+    });
   }
 
   // Hover behavior
@@ -127,21 +253,48 @@ const zoneBackgroundPlugin = {
 Chart.register(zoneBackgroundPlugin);
 
 
+async function loadInitialHistory() {
+  const res = await fetch("/api/history/latest/1000");
+  const data = await res.json();
+
+  fullHistory = data.map(d => ({
+    ppm: d.ppm,
+    timestamp: d.timestamp
+  }));
+
+  autoScroll = true;
+  updateChartWindow();
+}
+
 /* =========================
    INIT
 ========================= */
-if (isLivePage) {
-  initLivePage();
-} else {
-  console.log("main.js loaded on non-live page");
-}
+(async () => {
+  await loadSharedSettings();
 
-function initLivePage() {
+  const state = await loadSystemState();
+  updateNavAnalysisState(state.analysis_running);
+
+  if (isLivePage) {
+    initLivePage();
+  } else {
+    startSystemStateWatcher(); // 🔥 THIS fixes settings page
+  }
+
+  if (isOverviewPage) {
+    loadOverviewStats();
+    setInterval(loadOverviewStats, 5000);
+  }
+})();
+
+
+async function initLivePage() {
   if (!pausedOverlay) {
     console.warn("Paused overlay not found in DOM");
   }
 
   createChart();
+  await loadInitialHistory();
   loadLiveSettings();
   poll();          // first fetch immediately
   startPolling();  // then interval
@@ -171,6 +324,7 @@ function hidePausedOverlay() {
    POLLING
 ========================= */
 function startPolling() {
+  if (!analysisRunning) return; // ⛔ don’t start if paused
   stopPolling();
   pollInterval = setInterval(poll, pollingDelay);
 }
@@ -312,10 +466,21 @@ function createChart() {
     },
     options: {
       responsive: true,
+
       animation: {
         duration: 450,
         easing: "easeOutQuart",
       },
+
+      animations: {
+        x: {
+          duration: 0   // 🚫 never animate horizontal movement
+        },
+        y: {
+          duration: 450 // ✅ only animate vertical value
+        }
+      },
+
       plugins: {
         legend: { display: false },
       },
@@ -363,9 +528,60 @@ function gradientBackground(ctx) {
   return gradient;
 }
 
+function updateChartWindow(animated = false) {
+  if (!chart) return;
+
+  const maxOffset = Math.max(0, fullHistory.length - MAX_POINTS);
+
+  if (autoScroll) {
+    historyOffset = maxOffset;
+  }
+
+  historyOffset = Math.max(0, Math.min(historyOffset, maxOffset));
+
+  const slice = fullHistory.slice(
+    historyOffset,
+    historyOffset + MAX_POINTS
+  );
+
+  const labels = slice.map(d =>
+    new Date(d.timestamp).toLocaleTimeString()
+  );
+  const values = slice.map(d => d.ppm);
+
+  chart.data.labels = labels;
+  chart.data.datasets[0].data = values;
+
+  if (animated) {
+    chart.update();
+  } else {
+    chart.update("none");
+  }
+
+  if (historyScroll) {
+    historyScroll.max = maxOffset;
+    historyScroll.value = historyOffset;
+  }
+}
+
 /* =========================
    UI ANIMATIONS
 ========================= */
+function appendLivePoint(ppm, timestamp) {
+  const label = new Date(timestamp).toLocaleTimeString();
+
+  chart.data.labels.push(label);
+  chart.data.datasets[0].data.push(ppm);
+
+  // keep window size
+  if (chart.data.labels.length > MAX_POINTS) {
+    chart.data.labels.shift();
+    chart.data.datasets[0].data.shift();
+  }
+
+  chart.update(); // ✅ animated append
+}
+
 function animateValue(ppm) {
   if (lastPPM === null) {
     valueEl.textContent = `${ppm} ppm`;
@@ -448,34 +664,62 @@ async function poll() {
   const res = await fetch("/api/latest");
   const data = await res.json();
 
+  /* ⏸ Pause handling — LIVE PAGE ONLY */
   if (data.analysis_running === false) {
-    showPausedOverlay();
+    analysisRunning = false;
+
+    updateNavAnalysisState(false);
+    stopPolling(); // 🔥 stop everywhere
+
+    if (isLivePage) {
+      showPausedOverlay();
+    }
+
     return;
   }
 
-  hidePausedOverlay();
+  if (!analysisRunning && data.analysis_running === true) {
+    analysisRunning = true;
 
-  if (data.ppm == null) {
-    valueEl.textContent = "---";
-    trendEl.textContent = "";
-    qualityEl.textContent = "En attente de données…";
-    qualityEl.style.color = "#9ca3af";
-    qualityEl.style.background = "rgba(255,255,255,0.08)";
+    updateNavAnalysisState(true);
+    startPolling(); // 🔥 resume polling
+  }
+
+  if (isLivePage) hidePausedOverlay();
+
+  if (!data || data.ppm == null) {
+    if (isLivePage) {
+      valueEl.textContent = "---";
+      trendEl.textContent = "";
+      qualityEl.textContent = "En attente de données…";
+      qualityEl.style.color = "#9ca3af";
+      qualityEl.style.background = "rgba(255,255,255,0.08)";
+    }
     return;
   }
 
   const ppm = data.ppm;
-  const time = new Date().toLocaleTimeString();
 
-  const prevPPM = lastPPM;
+  /* LIVE PAGE */
+  if (isLivePage) {
+    const prevPPM = lastPPM;
+    updateTrend(prevPPM, ppm);
+    animateValue(ppm);
+    animateQuality(ppm);
 
-  updateTrend(prevPPM, ppm); // morph FIRST
-  animateValue(ppm);        // updates lastPPM
-  animateQuality(ppm);
+    fullHistory.push({
+      ppm,
+      timestamp: new Date().toISOString()
+    });
 
-  chart.data.labels.push(time);
-  chart.data.datasets[0].data.push(ppm);
-  chart.update();
+    if (autoScroll) {
+      // 🔥 animate new point coming in
+      updateChartWindow(true);
+    } else {
+      // user is scrolling history → no animation
+      updateChartWindow(false);
+    }
+  }
 }
 
 /* =========================
@@ -499,3 +743,158 @@ resetBtn?.addEventListener("click", () => {
   chart.data.datasets[0].data = [];
   chart.update();
 });
+
+function updateAirHealth(avgPPM) {
+  const card = document.querySelector(".air-health");
+  const status = document.getElementById("air-status");
+
+  if (!card || !status) return;
+
+  card.className = "card air-health";
+
+  if (avgPPM < goodThreshold) {
+    card.classList.add("good");
+    status.textContent = "Excellent";
+  } else if (avgPPM < badThreshold) {
+    card.classList.add("medium");
+    status.textContent = "Acceptable";
+  } else {
+    card.classList.add("bad");
+    status.textContent = "Mauvais";
+  }
+}
+
+async function loadOverviewStats() {
+  const avgEl = document.getElementById("avg-ppm");
+  const maxEl = document.getElementById("max-ppm");
+  const badEl = document.getElementById("bad-time");
+  const statusEl = document.getElementById("air-status");
+  const subEl = document.getElementById("air-sub");
+  const airCard = document.querySelector(".air-health");
+  const analysisEl = document.getElementById("analysis-status");
+  const analysisWidget = document.getElementById("analysis-widget");
+  const thresholdsEl = document.getElementById("co2-thresholds");
+
+  if (!airCard || !statusEl) return;
+
+  try {
+    const settings = await loadSystemState();
+
+    updateNavAnalysisState(settings.analysis_running);
+
+    /* ⏸ ANALYSIS PAUSED */
+    if (!settings.analysis_running) {
+      airCard.classList.remove("good", "medium", "bad");
+      airCard.classList.add("paused");
+
+      statusEl.textContent = "Analyse en pause";
+      subEl.textContent = "Aucune donnée en cours";
+
+      if (analysisEl) {
+        analysisEl.textContent = "Pause";
+        analysisWidget?.classList.remove("good");
+        analysisWidget?.classList.add("paused");
+      }
+
+      if (avgEl) avgEl.textContent = "—";
+      if (maxEl) maxEl.textContent = "—";
+      if (badEl) badEl.textContent = "—";
+
+      thresholdsEl.textContent = `${settings.good_threshold} / ${settings.bad_threshold} ppm`;
+
+      updateCO2Thermo?.(0); 
+      return;
+    }
+
+    /* ▶️ ANALYSIS RUNNING — sync system state */
+    airCard.classList.remove("paused");
+    analysisWidget?.classList.remove("paused");
+    analysisWidget?.classList.add("good");
+
+    if (analysisEl) {
+      analysisEl.textContent = "Active";
+    }
+
+    thresholdsEl.textContent =
+      `${settings.good_threshold} / ${settings.bad_threshold} ppm`;
+
+    /* ▶️ ANALYSIS RUNNING — LIVE SNAPSHOT */
+    const liveRes = await fetch("/api/latest");
+    const live = await liveRes.json();
+
+    if (live?.ppm != null) {
+      updateAirHealth(live.ppm);
+      updateCO2Thermo(live.ppm);
+      animateSubValue(live.ppm, subEl);
+    }
+
+    const res = await fetch("/api/history/today");
+    const data = await res.json();
+    if (!data.length) return;
+
+    const values = data.map(d => d.ppm);
+    const avg = Math.round(values.reduce((a, b) => a + b, 0) / values.length);
+    const max = Math.max(...values);
+    const badMinutes = values.filter(v => v >= badThreshold).length;
+
+    if (avgEl) avgEl.textContent = `${avg} ppm`;
+    if (maxEl) maxEl.textContent = `${max} ppm`;
+    if (badEl) badEl.textContent = `${badMinutes} min`;
+
+  } catch (e) {
+    console.error("Overview stats failed", e);
+  }
+}
+
+if (isOverviewPage) {
+  loadOverviewStats();
+}
+
+/* =========================
+   EXPORT DAILY CSV
+========================= */
+document.getElementById("export-day-csv")?.addEventListener("click", async () => {
+  const res = await fetch("/api/history/today");
+  const data = await res.json();
+
+  let csv = "time,ppm\n";
+  data.forEach(d => {
+    const time = new Date(d.timestamp).toLocaleTimeString();
+    csv += `${time},${d.ppm}\n`;
+  });
+
+  const blob = new Blob([csv], { type: "text/csv" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "rapport_journalier.csv";
+  a.click();
+});
+
+/* =========================
+   EXPORT DAILY PDF (BASIC)
+========================= */
+document.getElementById("export-day-pdf")?.addEventListener("click", () => {
+  alert("Export PDF prêt pour une future version 🚀");
+});
+
+function updateCO2Thermo(value) {
+  const fill = document.getElementById("co2-fill");
+  const label = document.getElementById("co2-mini-value");
+
+  // ⛔ Not on this page
+  if (!fill || !label) return;
+
+  const max = 2000;
+  const percent = Math.min(value / max, 1) * 100;
+
+  fill.style.height = percent + "%";
+  label.textContent = value + " ppm";
+
+  if (value < 800) {
+    fill.style.background = "var(--good)";
+  } else if (value < 1200) {
+    fill.style.background = "var(--medium)";
+  } else {
+    fill.style.background = "var(--bad)";
+  }
+}
