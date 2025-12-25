@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, jsonify, render_template, request, make_response
 import random
 import time
 from datetime import datetime
@@ -108,23 +108,23 @@ def api_latest():
     settings = load_settings()
 
     if not settings["analysis_running"]:
-        return jsonify({
+        resp = make_response(jsonify({
             "analysis_running": False,
             "ppm": None
-        })
+        }))
+        resp.headers["Cache-Control"] = "no-store"
+        return resp
 
-    # generate ONE value
     ppm = generate_co2(settings["realistic_mode"])
-
-    # save to SQLite (persistent)
     save_reading(ppm)
 
-    return jsonify({
+    resp = make_response(jsonify({
         "analysis_running": True,
-        "ppm": ppm
-    })
-
-
+        "ppm": ppm,
+        "timestamp": datetime.utcnow().isoformat()
+    }))
+    resp.headers["Cache-Control"] = "no-store"
+    return resp
 
 @app.route("/api/history/today")
 def api_history_today():

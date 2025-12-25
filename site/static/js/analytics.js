@@ -1,4 +1,4 @@
-let chart;
+let analyticsChart;
 let analyticsSource = "aerium";
 let currentData = [];
 
@@ -65,8 +65,8 @@ function drawChart(data) {
   );
   const values = data.map(d => d.ppm);
 
-  if (!chart) {
-    chart = new Chart(
+  if (!analyticsChart) {
+    analyticsChart = new Chart(
       document.getElementById("analytics-chart"),
       {
         type: "line",
@@ -88,9 +88,9 @@ function drawChart(data) {
       }
     );
   } else {
-    chart.data.labels = labels;
-    chart.data.datasets[0].data = values;
-    chart.update("none");
+    analyticsChart.data.labels = labels;
+    analyticsChart.data.datasets[0].data = values;
+    analyticsChart.update("none");
   }
 }
 
