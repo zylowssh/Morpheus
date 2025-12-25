@@ -1,0 +1,61 @@
+{% extends "base.html" %} {% block content %}
+
+<section class="card">
+  <h2>📈 Historique & Analyses</h2>
+  <p class="hint">
+    Analysez vos données Aerium ou importez un fichier CSV externe (analyse
+    temporaire).
+  </p>
+
+  <!-- DATA SOURCE -->
+  <div class="analytics-toolbar">
+    <div class="data-source-switch">
+      <button id="use-aerium" class="active">Données Aerium</button>
+      <button id="use-csv">Importer CSV</button>
+    </div>
+
+    <div class="analytics-period">
+      <label>Période</label>
+      <select id="aerium-range">
+        <option value="today">Aujourd’hui</option>
+        <option value="7d">7 jours</option>
+        <option value="30d">30 jours</option>
+      </select>
+    </div>
+  </div>
+
+  <div id="csv-upload" class="csv-drop hidden">
+    <input type="file" id="csv-file" accept=".csv" />
+    <p>Analyse temporaire — non sauvegardée</p>
+  </div>
+</section>
+
+<!-- METRICS -->
+<section class="card analytics-metrics">
+  <div class="metric">
+    <span class="label">Moyenne</span>
+    <span class="value" id="m-avg">—</span>
+  </div>
+  <div class="metric">
+    <span class="label">Minimum</span>
+    <span class="value" id="m-min">—</span>
+  </div>
+  <div class="metric">
+    <span class="label">Maximum</span>
+    <span class="value" id="m-max">—</span>
+  </div>
+  <div class="metric">
+    <span class="label">Temps air dégradé</span>
+    <span class="value" id="m-bad">—</span>
+  </div>
+</section>
+
+<!-- CHART -->
+<section class="card">
+  <canvas id="analytics-chart"></canvas>
+</section>
+
+{% endblock %} {% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+<script src="{{ url_for('static', filename='js/analytics.js') }}"></script>
+{% endblock %}

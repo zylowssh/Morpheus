@@ -52,6 +52,53 @@ if (historyScroll) {
   });
 }
 
+function initNavbar() {
+  const navCenter = document.querySelector(".nav-center");
+  const underline = document.querySelector(".nav-underline");
+  if (!navCenter || !underline) return;
+
+  const links = navCenter.querySelectorAll("a");
+  const path = window.location.pathname;
+
+  function getActiveLink() {
+    return [...links].find(link =>
+      link.getAttribute("href") === path
+    );
+  }
+
+  function moveUnderline(el) {
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    const p = navCenter.getBoundingClientRect();
+    underline.style.width = `${r.width}px`;
+    underline.style.left = `${r.left - p.left}px`;
+    underline.style.opacity = "1";
+  }
+
+  const active = getActiveLink();
+  if (active) {
+    active.classList.add("active");
+    requestAnimationFrame(() => moveUnderline(active));
+  }
+
+  links.forEach(l =>
+    l.addEventListener("mouseenter", () => moveUnderline(l))
+  );
+
+  navCenter.addEventListener("mouseleave", () =>
+    moveUnderline(getActiveLink())
+  );
+
+  window.addEventListener("resize", () =>
+    moveUnderline(getActiveLink())
+  );
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  initNavbar();
+  initGlobalState();
+});
+
 function startSystemStateWatcher() {
   setInterval(async () => {
     try {
@@ -61,6 +108,21 @@ function startSystemStateWatcher() {
       console.warn("Failed to refresh system state");
     }
   }, 2000);
+}
+
+function initGlobalState() {
+  refreshSystemState();
+  setInterval(refreshSystemState, 2000);
+}
+
+async function refreshSystemState() {
+  try {
+    const state = await loadSystemState();
+    updateNavAnalysisState(state.analysis_running);
+    analysisRunning = state.analysis_running;
+  } catch (e) {
+    console.warn("State sync failed");
+  }
 }
 
 let lastSubPPM = null;
@@ -142,64 +204,6 @@ async function loadSystemState() {
   return await res.json();
 }
 
-if (navCenter && underline && links.length) {
-  const links = navCenter.querySelectorAll("a");
-  const path = window.location.pathname;
-
-  function getActiveLink() {
-    return [...links].find(link => {
-      const href = link.getAttribute("href");
-      return href === "/" ? path === "/" : path.startsWith(href);
-    });
-  }
-
-  function moveUnderline(el) {
-    if (!el) return;
-
-    const linkRect = el.getBoundingClientRect();
-    const parentRect = navCenter.getBoundingClientRect();
-
-    underline.style.width = `${linkRect.width}px`;
-    underline.style.left = `${linkRect.left - parentRect.left}px`;
-    underline.style.opacity = "1";
-  }
-
-  // ✅ Set active on load
-  const active = getActiveLink();
-  if (active) {
-    active.classList.add("active");
-
-    window.addEventListener("load", async () => {
-      // ✅ wait for fonts (critical)
-      if (document.fonts?.ready) {
-        await document.fonts.ready;
-      }
-
-      // ✅ force flexbox layout resolution
-      forceLayout(navCenter);
-      forceLayout(active);
-
-      // ✅ now measurements are correct
-      moveUnderline(active);
-    });
-  }
-
-  // Hover behavior
-  links.forEach(link => {
-    link.addEventListener("mouseenter", () => moveUnderline(link));
-  });
-
-  // ✅ Snap back to active when leaving nav
-  navCenter.addEventListener("mouseleave", () => {
-    moveUnderline(getActiveLink());
-  });
-
-  // Keep aligned on resize
-  window.addEventListener("resize", () => {
-    moveUnderline(getActiveLink());
-  });
-}
-
 const zoneBackgroundPlugin = {
   id: "zoneBackground",
   beforeDraw(chart) {
@@ -271,22 +275,17 @@ async function loadInitialHistory() {
 ========================= */
 (async () => {
   await loadSharedSettings();
-
   const state = await loadSystemState();
   updateNavAnalysisState(state.analysis_running);
 
-  if (isLivePage) {
-    initLivePage();
-  } else {
-    startSystemStateWatcher(); // 🔥 THIS fixes settings page
-  }
+  startSystemStateWatcher(); // 👈 ADD THIS ALWAYS
 
+  if (isLivePage) initLivePage();
   if (isOverviewPage) {
     loadOverviewStats();
     setInterval(loadOverviewStats, 5000);
   }
 })();
-
 
 async function initLivePage() {
   if (!pausedOverlay) {
@@ -664,6 +663,8 @@ async function poll() {
   const res = await fetch("/api/latest");
   const data = await res.json();
 
+  if (!analysisRunning) return;
+
   /* ⏸ Pause handling — LIVE PAGE ONLY */
   if (data.analysis_running === false) {
     analysisRunning = false;
@@ -897,4 +898,32 @@ function updateCO2Thermo(value) {
   } else {
     fill.style.background = "var(--bad)";
   }
+}
+
+if (document.getElementById("csv-file")) {
+  document.getElementById("use-csv").onclick = () => {
+    document.getElementById("csv-upload").classList.remove("hidden");
+  };
+
+  document.getElementById("use-aerium").onclick = () => {
+    document.getElementById("csv-upload").classList.add("hidden");
+  };
+
+  document.getElementById("csv-file").addEventListener("change", e => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const rows = reader.result.split("\n").slice(1);
+      const data = rows
+        .map(r => r.split(","))
+        .filter(r => r.length >= 2)
+        .map(([t, ppm]) => ({ timestamp: t, ppm: Number(ppm) }))
+        .filter(d => !isNaN(d.ppm));
+
+      renderAnalytics(data);
+    };
+    reader.readAsText(file);
+  });
 }

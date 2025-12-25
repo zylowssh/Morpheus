@@ -63,6 +63,45 @@ def live_page():
 def settings_page():
     return render_template("settings.html")  # Settings page
 
+@app.route("/analytics")
+def analytics():
+    return render_template("analytics.html")
+
+@app.route("/api/history/<range>")
+def history_range(range):
+    db = get_db()
+
+    if range == "today":
+        rows = db.execute("""
+            SELECT ppm, timestamp
+            FROM co2_readings
+            WHERE date(timestamp) = date('now')
+            ORDER BY timestamp
+        """).fetchall()
+
+    elif range == "7d":
+        rows = db.execute("""
+            SELECT ppm, timestamp
+            FROM co2_readings
+            WHERE timestamp >= datetime('now', '-7 days')
+            ORDER BY timestamp
+        """).fetchall()
+
+    elif range == "30d":
+        rows = db.execute("""
+            SELECT ppm, timestamp
+            FROM co2_readings
+            WHERE timestamp >= datetime('now', '-30 days')
+            ORDER BY timestamp
+        """).fetchall()
+
+    else:
+        db.close()
+        return jsonify({"error": "Invalid range"}), 400
+
+    db.close()
+    return jsonify([dict(r) for r in rows])
+
 # 3. API ROUTES
 @app.route("/api/latest")
 def api_latest():
