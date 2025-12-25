@@ -1,12 +1,16 @@
 from flask import Flask, jsonify, render_template, request, make_response
 import random
 import time
-from datetime import datetime
+from datetime import datetime, date
 import os
 from database import get_db, init_db
 import json
+from flask import send_file
+import io
+from weasyprint import HTML
 
 from fake_co2 import generate_co2, save_reading
+
 
 app = Flask(__name__)
 
@@ -139,6 +143,19 @@ def api_history_today():
 
     return jsonify([dict(r) for r in rows])
 
+def get_today_history():
+    db = get_db()
+    rows = db.execute("""
+        SELECT ppm, timestamp
+        FROM co2_readings
+        WHERE date(timestamp) = date('now')
+        ORDER BY timestamp
+    """).fetchall()
+    db.close()
+
+    return [dict(r) for r in rows]
+
+
 @app.route("/api/settings", methods=["GET", "POST", "DELETE"])
 def api_settings():
     if request.method == "POST":
@@ -167,6 +184,81 @@ def api_history_latest(limit):
 
     # reverse so oldest → newest
     return jsonify([dict(r) for r in reversed(rows)])
+
+
+def generate_pdf(html):
+    pdf_io = io.BytesIO()
+
+    HTML(
+        string=html,
+        base_url=os.path.abspath(".")
+    ).write_pdf(
+        target=pdf_io,
+        presentational_hints=True
+    )
+
+    pdf_io.seek(0)
+
+    return send_file(
+        pdf_io,
+        mimetype="application/pdf",
+        as_attachment=False,
+        download_name="daily_report.pdf"
+    )
+
+
+@app.route("/api/report/daily/pdf")
+def export_daily_pdf():
+    data = get_today_history()
+    settings = load_settings()
+
+    if not data:
+        return "No data", 400
+
+    values = [d["ppm"] for d in data]
+
+    avg = round(sum(values) / len(values))
+    max_ppm = max(values)
+    min_ppm = min(values)
+
+    # ⏱ minutes above bad threshold
+    bad_minutes = sum(1 for v in values if v >= settings["bad_threshold"])
+
+    # ✅ EXPOSURE BREAKDOWN (THIS IS YOUR QUESTION)
+    good = sum(1 for v in values if v < settings["good_threshold"])
+    medium = sum(
+        1 for v in values
+        if settings["good_threshold"] <= v < settings["bad_threshold"]
+    )
+    bad = sum(1 for v in values if v >= settings["bad_threshold"])
+    total = len(values)
+
+    good_pct = round(good / total * 100)
+    medium_pct = round(medium / total * 100)
+    bad_pct = round(bad / total * 100)
+
+    with open("static/css/report.css", "r", encoding="utf-8") as f:
+        report_css = f.read()
+
+    html = render_template(
+        "report_daily.html",
+        date=date.today().strftime("%d %B %Y"),
+        avg=avg,
+        max=max_ppm,
+        min=min_ppm,
+        bad_minutes=bad_minutes,
+        good_pct=good_pct,
+        medium_pct=medium_pct,
+        bad_pct=bad_pct,
+        good_threshold=settings["good_threshold"],
+        bad_threshold=settings["bad_threshold"],
+        generated_at=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        report_css=report_css
+    )
+
+    return generate_pdf(html)
+
+
 
 
 if __name__ == "__main__":

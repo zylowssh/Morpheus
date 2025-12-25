@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Aerium – Rapport journalier</title>
+    <style>
+      {{ report_css | safe }}
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header class="header">
+        <div class="header-left">
+          <h1>Aerium</h1>
+          <p>Rapport journalier – {{ date }}</p>
+        </div>
+      </header>
+
+      <section class="card">
+        <h2>Résumé</h2>
+        <div class="grid">
+          <div class="metric">
+            <span>Moyenne</span>
+            <strong>
+              {{ avg }}
+              <em>ppm</em>
+            </strong>
+          </div>
+          <div class="metric">
+            <span>Maximum</span>
+            <strong>{{ max }} <em>ppm</em></strong>
+          </div>
+          <div class="metric">
+            <span>Minimum</span>
+            <strong>{{ min }} <em>ppm</em></strong>
+          </div>
+          <div class="metric">
+            <span>Temps dégradé</span>
+            <strong>{{ bad_minutes }} <em>min</em></strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Exposition</h2>
+
+        <div class="bar">
+          <div class="bar-good" style="width: {{ good_pct }}%"></div>
+          <div class="bar-medium" style="width: {{ medium_pct }}%"></div>
+          <div class="bar-bad" style="width: {{ bad_pct }}%"></div>
+        </div>
+
+        <div class="legend">
+          <span class="good">Bon — {{ good_pct }}%</span>
+          <span class="medium">Moyen — {{ medium_pct }}%</span>
+          <span class="bad">Mauvais — {{ bad_pct }}%</span>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Seuils</h2>
+        <p>{{ good_threshold }} / {{ bad_threshold }} ppm</p>
+      </section>
+
+      <section class="card">
+        <h2>Conclusion</h2>
+        <p>
+          La qualité de l’air est restée {% if bad_pct == 0 %} excellente {%
+          elif bad_pct < 20 %} acceptable {% else %} préoccupante {% endif %}
+          tout au long de la journée.
+        </p>
+      </section>
+
+      <footer class="footer">Généré le {{ generated_at }}</footer>
+    </div>
+  </body>
+</html>

@@ -16,3 +16,4 @@ __pycache__/*
 # Mac/Windows specific
 .DS_Store
 Thumbs.db
+site/data/aerium.sqlite

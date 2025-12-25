@@ -1,0 +1,177 @@
+@page {
+  size: A4;
+  margin: 22mm;
+  background: #0b0f14;
+}
+
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: #0b0f14 !important;
+  color: #eaeaea;
+  font-size: 11pt;
+}
+
+.page {
+  max-width: 170mm;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border-left: 6px solid #4f8cff;
+  padding: 12px 0 12px 18px;
+  margin-bottom: 24px;
+}
+
+.header h1 {
+  font-size: 28pt;
+  letter-spacing: 0.5px;
+}
+
+.header p {
+  font-size: 10pt;
+  color: #9aa4bf;
+}
+
+.card {
+  padding: 14px 16px;
+  margin-bottom: 18px;
+  background: linear-gradient(
+    180deg,
+    #121826 0%,
+    #0f1522 100%
+  );
+  border: 1px solid #1f2937;
+  border-radius: 8px;
+}
+
+h2 {
+  margin: 0 0 8px 0;
+  font-size: 13pt;
+  color: #ffffff;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-top: 6px;
+}
+
+.metric strong {
+  font-size: 15pt;
+  margin-top: 2px;
+}
+
+.metric {
+  padding: 6px 0;
+}
+
+.metric span {
+  font-size: 9pt;
+  color: #9aa4bf;
+}
+
+.bar {
+  display: flex;
+  height: 10px;
+  border-radius: 5px;
+  overflow: hidden;
+  margin: 10px 0;
+  background: #1f2a44;
+}
+.bar {
+  height: 8px;
+  border-radius: 4px;
+}
+
+.legend {
+  margin-top: 6px;
+  justify-content: space-between;
+}
+
+
+.bar .good { background: #3ddc97; }
+.bar .medium { background: #ffb020; }
+.bar .bad { background: #ff5c5c; }
+
+.legend {
+  display: flex;
+  gap: 14px;
+  font-size: 9pt;
+}
+
+.good { color: #3ddc97; }
+.medium { color: #ffb020; }
+.bad { color: #ff5c5c; }
+
+.bar {
+  display: flex;
+  height: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+  background: #1f2a44;
+}
+
+.bar-good   { background: #3ddc97; }
+.bar-medium { background: #ffb020; }
+.bar-bad    { background: #ff5c5c; }
+
+.footer {
+  margin-top: 28px;
+  padding-top: 8px;
+  border-top: 1px solid #1f2a44;
+  font-size: 8pt;
+  color: #8a94ad;
+  text-align: right;
+}
+
+section.card:last-of-type p {
+  font-size: 11pt;
+  line-height: 1.5;
+  color: #dbe1f1;
+}
+
+.footer {
+  margin-top: 32px;
+  padding-top: 10px;
+  border-top: 1px solid #1f2a44;
+  font-size: 8pt;
+  color: #8a94ad;
+  text-align: right;
+}
+
+.metric strong {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  font-size: 18pt;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.metric strong em {
+  font-size: 9pt;
+  font-style: normal;
+  color: #9aa4bf;
+}
+
+.metric {
+  padding: 6px 12px;
+  border-right: 1px solid #1f2937;
+}
+
+.metric:last-child {
+  border-right: none;
+}
+
+.metric:last-child strong {
+  font-size: 15pt;
+}
+
+.grid {
+  gap: 8px;
+}

@@ -831,7 +831,7 @@ document
    EXPORT DAILY PDF (PLACEHOLDER)
 ===================================================== */
 document.getElementById("export-day-pdf")?.addEventListener("click", () => {
-  alert("Export PDF prêt pour une future version 🚀");
+  window.open("/api/report/daily/pdf", "_blank");
 });
 
 /* =====================================================
